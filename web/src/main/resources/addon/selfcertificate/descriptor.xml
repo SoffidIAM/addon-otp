@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zkib-model>
+	<datanode name="root">
+		<finder name="rootCerts" type="rootCerts" refreshAfterCommit="true">
+			<ejb-finder jndi="soffid/ejb/com.soffid.iam.addons.selfcertificate.service.SelfCertificateService"
+				method="getRootCertificates">
+			</ejb-finder>
+			<new-instance-bean className="com.soffid.iam.addons.selfcertificate.common.RootCertificate"> 
+			</new-instance-bean>
+		</finder>
+	</datanode>
+	
+	
+	<datanode name="rootCerts">
+		<ejb-handler jndi="soffid/ejb/com.soffid.iam.addons.selfcertificate.service.SelfCertificateService">
+			<update-method method="updateRootCertificate">
+				<parameter value="${instance}" />
+			</update-method>
+			<insert-method method="createRootCertificate" returnBean="true">
+				<parameter value="${instance}" />
+			</insert-method>
+		</ejb-handler>
+		<validator>
+			<attribute-validator expr="${instance.organizationName}" notNull="true" friendlyName="selfCertificate.organizationName"/>
+			<attribute-validator expr="${instance.userCertificateMonths}" notNull="true" friendlyName="selfCertificate.userCertificateMonts"/>
+			<attribute-validator expr="${instance.expirationDate}" notNull="true" friendlyName="selfCertificate.expirationDate"/>
+		</validator>
+	</datanode>
+</zkib-model>

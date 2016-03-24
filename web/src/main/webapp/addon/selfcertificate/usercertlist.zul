@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?page id="federacioIdentitats" title="Self certificate configuration"?>
+<?taglib uri="/WEB-INF/tld/web/core.dsp.tld" prefix="c" ?>
+<?init class="es.caib.seycon.ng.web.CheckPermisos" arg0="selfCertificate" ?>
+<?component name="input_criteri" macro-uri="/comu/input_criteri.zul"?>
+<?component name="input_dada" macro-uri="/comu/input_dada.zul"?>
+<?component name="input_etiqueta" macro-uri="/comu/input_etiqueta.zul"?>
+<zk xmlns:h="http://www.w3.org/1999/xhtml">
+
+	<style src="~./styles/estil.css" />
+ 
+	<zscript>
+	<![CDATA[
+	import es.caib.zkib.datasource.*;
+	
+	boolean canManage = execution.getNativeRequest().isUserInRole("selfcertificate:manage/*");
+	
+	void download (Component button)
+	{
+		es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext (button);
+		java.security.cert.X509Certificate cert = XPathUtils.getValue(ctx, "@certificate");
+		Filedownload.save(cert.getEncoded(), "application/pkix-cert", XPathUtils.getValue(ctx, "@user")+".cer");
+	}
+	
+	void activateRow (Row row)
+	{
+		es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext(row);
+		Boolean obsolete = XPathUtils.getValue(ctx, "/@revoked");
+		String org = XPathUtils.getValue(ctx, "/@description");
+		if (obsolete)
+		{
+			row.getChildren().get(0).style="text-decoration: line-through;";
+			row.getChildren().get(1).style="text-decoration: line-through;";
+			row.getChildren().get(2).style="text-decoration: line-through;";
+			row.getChildren().get(3).visible = false;
+		}
+	}
+	
+	void revokeCertificate (Component cmp)
+	{
+		es.caib.zkib.zkiblaf.Missatgebox.confirmaOK_CANCEL("Do you really want to remove this certificate?", new org.zkoss.zk.ui.event.EventListener(){
+			public void onEvent(Event event) throws Exception
+			{
+				if (event.getData().equals (es.caib.zkib.zkiblaf.Missatgebox.OK))
+				{
+					es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext(cmp);
+					XPathUtils.setValue(ctx, "/@revoked", true);
+					activateRow ((Row) cmp. getParent());
+				}
+			}
+		});
+	}
+	
+
+	void addCert() {
+		certgenerator.visible=true;
+		certgenerator.invalidate();
+	}
+
+]]>
+	</zscript>
+
+		<grid dataPath="/esquema/lista/listbox:/certs" id="certGrid">
+			<attribute name="onNewRow"><![CDATA[
+	Row row = event.data;
+	activateRow(row);
+]]></attribute>
+			<columns>
+				<column label="${c:l('selfCertificate.description')}" />
+				<column label="${c:l('selfCertificate.creationnDate')}" />
+				<column label="${c:l('selfCertificate.expirationDate')}" />
+				<column label="" width="2em" />
+				<column label="" width="2em" />
+			</columns>
+			<datarow>
+				<label bind="/@description"/>
+				<datebox bind="/@creationDate" disabled="true" readonly="true" format="${c:l('accounts.dateFormat')}"  onChanging="" onChange='' width="10em"/>
+				<datebox bind="/@expirationDate" disabled="true" readonly="true" format="${c:l('accounts.dateFormat')}"  onChanging="" onChange=''  width="10em"/>
+				<imageclic align="right" src="~./img/list-remove.gif">
+					<attribute name="onClick"><![CDATA[
+	revokeCertificate(event.target);
+]]>
+					</attribute>
+				</imageclic>
+				<imageclic align="right" src="/img/log.png">
+					<attribute name="onClick"><![CDATA[
+	download(event.target);
+]]>
+					</attribute>
+				</imageclic>
+			</datarow>
+		</grid>
+</zk>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zkib-model>
+	<datanode name="root">
+		<finder name="myCerts" type="myCert" refreshAfterCommit="true">
+			<ejb-finder jndi="soffid/ejb/com.soffid.iam.addons.selfcertificate.service.SelfCertificateService"
+				method="findMyCertificates">
+			</ejb-finder>
+			<new-instance-bean className="com.soffid.iam.addons.selfcertificate.common.SelfCertificate"> 
+			</new-instance-bean>
+		</finder>
+		<finder name="rootCert" type="rootCert">
+			<ejb-finder jndi="soffid/ejb/com.soffid.iam.addons.selfcertificate.service.SelfCertificateService"
+				method="getRootCertificate">
+			</ejb-finder>
+		</finder>
+	</datanode>
+	
+	
+	<datanode name="myCert">
+		<ejb-handler jndi="soffid/ejb/com.soffid.iam.addons.selfcertificate.service.SelfCertificateService"  if="${instance.revoked}">
+			<update-method method="revoke">
+				<parameter value="${instance}" />
+			</update-method>
+		</ejb-handler>
+	</datanode>
+	
+	<datanode name="rootCert"/> 
+</zkib-model>

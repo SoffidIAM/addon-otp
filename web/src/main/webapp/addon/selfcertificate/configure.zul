@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?page id="federacioIdentitats" title="Self certificate configuration"?>
+<?taglib uri="/WEB-INF/tld/web/core.dsp.tld" prefix="c" ?>
+<?init class="es.caib.seycon.ng.web.CheckPermisos" arg0="selfCertificate" ?>
+<?component name="input_criteri" macro-uri="/comu/input_criteri.zul"?>
+<?component name="input_dada" macro-uri="/comu/input_dada.zul"?>
+<?component name="input_etiqueta" macro-uri="/comu/input_etiqueta.zul"?>
+<zk xmlns:h="http://www.w3.org/1999/xhtml">
+
+	<style src="~./styles/estil.css" />
+
+	<datamodel id="model" rootNode="root"
+		src="addon/selfcertificate/descriptor.xml" />
+
+	<zscript>
+	<![CDATA[
+	import es.caib.zkib.datasource.*;
+	
+	boolean canManage = execution.getNativeRequest().isUserInRole("selfcertificate:manage/*");
+	void addRoot ()
+	{
+		XPathUtils.createPath (model, "/rootCerts");
+	}
+
+	void revokeCertificate (Component button)
+	{
+		es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext (button);
+		XPathUtils.setValue(ctx, "@obsolete", true);
+		activateRow ((Row) button.getParent());
+	}
+	
+	void download (Component button)
+	{
+		es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext (button);
+		java.security.cert.X509Certificate cert = (java.security.cert.X509Certificate)XPathUtils.getValue(ctx, "@certificate");
+		String name = XPathUtils.getValue(ctx, "@organizationName");
+		Long id = XPathUtils.getValue(ctx, "@id");
+		org.zkoss.zul.Filedownload.save ( new java.io.ByteArrayInputStream (cert.getEncoded()), "application/pkix-cert", name+"-"+id
+				+".cer"); 
+	}
+	
+	void activateRow (Row row)
+	{
+		es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext(row);
+		Boolean obsolete = XPathUtils.getValue(ctx, "/@obsolete");
+		String org = XPathUtils.getValue(ctx, "/@organizationName");
+		if (org == null)
+		{
+			java.util.Calendar c = java.util.Calendar.getInstance();
+			XPathUtils.setValue(ctx, "/@creationDate", c);
+			java.util.Calendar c2 = java.util.Calendar.getInstance();
+			c2.add(java.util.Calendar.YEAR, 10);
+			XPathUtils.setValue(ctx, "/@expirationDate", c2);
+			XPathUtils.setValue(ctx, "/@userCertificateMonths", 24);
+
+			row.getChildren().get(0).readonly = false;
+			row.getChildren().get(2).readonly = false;
+			row.getChildren().get(2).disabled = false;
+			row.getChildren().get(3).setReadonly(false);
+		}
+		else if (obsolete)
+		{
+			row.getChildren().get(0).style="text-decoration: line-through;";
+			row.getChildren().get(1).style="text-decoration: line-through;";
+			row.getChildren().get(2).style="text-decoration: line-through;";
+			row.getChildren().get(3).style="text-decoration: line-through;";
+			row.getChildren().get(4).visible = false;
+		} else {
+			row.getChildren().get(3).setReadonly(false);
+		}
+	}
+
+]]>
+	</zscript>
+
+	<frame id="ui" title="${c:l('selfcertificate.title')}" width="99%">
+		<label value="Issued root certificates" />
+		
+		<toolbar>
+			<toolbarbutton image="~./img/list-add.gif" 
+				label="Create new certificate" visible="${canManage}"
+				onClick="addRoot()" />
+			<toolbarbutton use="es.caib.zkib.zkiblaf.CommitButton" datamodel="/model"/>
+			<toolbarbutton use="es.caib.zkib.zkiblaf.UndoButton"  datamodel="/model"/>
+		</toolbar>
+		
+		<grid dataPath="/model:/rootCerts" id="rolesGrid">
+			<attribute name="onNewRow"><![CDATA[
+	Row row = event.data;
+	activateRow(row);
+]]></attribute>
+			<columns>
+				<column label="${c:l('selfCertificate.organizationName')}" />
+				<column label="${c:l('selfCertificate.creationnDate')}" />
+				<column label="${c:l('selfCertificate.expirationDate')}" />
+				<column label="${c:l('selfCertificate.userCertificateMonts')}" />
+				<column label="" width="2em" />
+				<column label="" width="2em" />
+			</columns>
+			<datarow>
+				<textbox bind="organizationName" readonly="true" onChanging="" onChange=''/>
+				<datebox bind="/@creationDate" disabled="true" readonly="true" format="${c:l('accounts.dateFormat')}"  onChanging="" onChange='' width="10em"/>
+				<datebox bind="/@expirationDate" disabled="true" readonly="true" format="${c:l('accounts.dateFormat')}"  onChanging="" onChange=''  width="10em"/>
+				<intbox bind="/@userCertificateMonths" readonly="true"  onOK='' onChange=''/>
+				<imageclic align="right" src="~./img/list-remove.gif">
+					<attribute name="onClick"><![CDATA[
+	revokeCertificate(event.target);
+]]>
+					</attribute>
+				</imageclic>
+				<imageclic align="right" src="/img/log.png">
+					<attribute name="onClick"><![CDATA[
+	download(event.target);
+]]>
+					</attribute>
+				</imageclic>
+			</datarow>
+		</grid>
+	</frame>
+</zk>

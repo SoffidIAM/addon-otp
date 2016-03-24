@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SoffidIAMPlugin xmlns="http://www.soffid.com/schema/iam-plugin-v1"> 
+	<name>Soffid Self-certificate addon</name>
+	<version>${pom.version}</version>
+	<core name="Self-certificate common classes" resource="selfcertificate-common-${pom.version}.jar"/>
+	<core name="Self-certificate core classes" resource="selfcertificate-core-${pom.version}.jar"/>
+	<web name="Self-certificate web files" resource="selfcertificate-web-${pom.version}.war"/>
+	<selfService name="Self-certificate selfservice files" resource="selfcertificate-selfservice-${pom.version}.war"/>
+</SoffidIAMPlugin>

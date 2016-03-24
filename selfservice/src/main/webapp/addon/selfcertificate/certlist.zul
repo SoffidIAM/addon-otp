@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?page id="federacioIdentitats" title="Self certificate configuration"?>
+<?taglib uri="/WEB-INF/tld/web/core.dsp.tld" prefix="c" ?>
+<?init class="es.caib.seycon.ng.web.CheckPermisos" arg0="selfCertificate" ?>
+<?component name="input_criteri" macro-uri="/comu/input_criteri.zul"?>
+<?component name="input_dada" macro-uri="/comu/input_dada.zul"?>
+<?component name="input_etiqueta" macro-uri="/comu/input_etiqueta.zul"?>
+<zk xmlns:h="http://www.w3.org/1999/xhtml">
+
+	<style src="~./styles/estil.css" />
+ 
+	<zscript>
+	<![CDATA[
+	import es.caib.zkib.datasource.*;
+	import org.zkoss.util.resource.Labels;
+	
+	boolean pkcsMethod = false;
+	String agent = Executions.getCurrent().getNativeRequest().getHeader("User-Agent");
+	if (agent != null && agent.contains ("AppleWebKit") && agent.contains ("iPad"))
+		pkcsMethod = true;
+	if (agent != null && agent.contains ("AppleWebKit") && agent.contains ("iPhone"))
+		pkcsMethod = true;
+	if (agent != null && agent.contains ("Mozilla") && agent.contains ("MSIE"))
+		pkcsMethod = true;
+	if (agent != null && agent.contains ("Mozilla") && agent.contains ("Trident"))
+		pkcsMethod = true;
+	
+	
+	boolean canManage = execution.getNativeRequest().isUserInRole("selfcertificate:user/*");
+	
+	void download (Component button)
+	{
+		es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext (button);
+		Long id = XPathUtils.getValue(ctx, "@id");
+		Executions.sendRedirect("addon/selfcertificate/download?id="+id);
+	}
+	
+	void activateRow (Row row)
+	{
+		es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext(row);
+		Boolean obsolete = XPathUtils.getValue(ctx, "/@revoked");
+		String org = XPathUtils.getValue(ctx, "/@description");
+		if (obsolete)
+		{
+			row.getChildren().get(0).style="text-decoration: line-through;";
+			row.getChildren().get(1).style="text-decoration: line-through;";
+			row.getChildren().get(2).style="text-decoration: line-through;";
+			row.getChildren().get(3).visible = false;
+		}
+	}
+	
+	void revokeCertificate (Component cmp)
+	{
+		es.caib.zkib.zkiblaf.Missatgebox.confirmaOK_CANCEL(Labels.getLabel("selfcertificate.wanttorevoke"), new org.zkoss.zk.ui.event.EventListener(){
+			public void onEvent(Event event) throws Exception
+			{
+				if (event.getData().equals (es.caib.zkib.zkiblaf.Missatgebox.OK))
+				{
+					es.caib.zkib.binder.BindContext ctx = XPathUtils.getComponentContext(cmp);
+					XPathUtils.setValue(ctx, "/@revoked", true);
+					certmodel.commit ();
+				}
+			}
+		});
+	}
+	
+
+	void addCert() {
+		certgenerator.visible=true;
+		certgenerator.invalidate();
+	}
+
+	void generatePkcs12() {
+		if (certdescription.getValue().equals(""))
+		{
+			es.caib.zkib.zkiblaf.Missatgebox.info (Labels.getLabel("selfcertificate.descriptionRequired"));
+			return;			
+		}
+		if (certpin.getValue().equals(""))
+		{
+			es.caib.zkib.zkiblaf.Missatgebox.info (Labels.getLabel("selfcertificate.pinrequired"));
+			return;			
+		}
+		javax.naming.Context jndi = new javax.naming.InitialContext();
+		com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateServiceHome home = jndi.lookup(com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateServiceHome.JNDI_NAME);
+		com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateService ejb = home.create();
+		byte [] data = ejb.createPkcs12(certdescription.getValue(), certpin.getValue());
+		
+		org.zkoss.zul.Filedownload.save (data, "application/x-pkcs12", "soffidcert.p12");
+		certdescription.setValue("");
+		certpin.setValue("");
+		certgenerator.setVisible(false);
+		certmodel.refresh();
+		
+	}
+]]>
+	</zscript>
+		<label value="${agent }"/>
+		<toolbar>
+			<toolbarbutton image="~./img/list-add.gif" 
+				label="${c:l('selfcertificate.createnew')}" visible="${canManage}"
+				onClick="addCert()" />
+		</toolbar>
+		<grid dataPath="/certmodel:/myCerts" id="certGrid">
+			<attribute name="onNewRow"><![CDATA[
+	Row row = event.data;
+	activateRow(row);
+]]></attribute>
+			<columns>
+				<column label="${c:l('selfCertificate.description')}" />
+				<column label="${c:l('selfCertificate.creationnDate')}" />
+				<column label="${c:l('selfCertificate.expirationDate')}" />
+				<column label="" width="2em" />
+				<column label="" width="2em" />
+			</columns>
+			<datarow>
+				<label bind="/@description"/>
+				<datebox bind="/@creationDate" disabled="true" readonly="true" format="${c:l('accounts.dateFormat')}"  onChanging="" onChange='' width="10em"/>
+				<datebox bind="/@expirationDate" disabled="true" readonly="true" format="${c:l('accounts.dateFormat')}"  onChanging="" onChange=''  width="10em"/>
+				<imageclic align="right" src="~./img/list-remove.gif">
+					<attribute name="onClick"><![CDATA[
+	revokeCertificate(event.target);
+]]>
+					</attribute>
+				</imageclic>
+				<imageclic align="right" src="/img/log.png">
+					<attribute name="onClick"><![CDATA[
+	download(event.target);
+]]>
+					</attribute>
+				</imageclic>
+			</datarow>
+		</grid>
+			<div visible="false" id="certgenerator" >
+			<!--  -->
+				<html unless="${pkcsMethod}"><![CDATA[
+				  <span>
+				     <form action='addon/selfcertificate/generate.html' method='POST' name="form"
+				     	onSubmit='if (document.getElementById("soffid_name").value == "") { alert ("A name is required"); event.preventDefault();  } document.getElementById("${certgenerator.uuid}").style.display="none"; '>
+ 				     ${c:l('selfCertificate.description')}
+				       <input name="name" id="soffid_name" />
+				       <keygen name="pkcs10" challenge="SoffidChallenge" />
+				       <input type="submit" value="${c:l('selfCertificate.generate')}" onClick=''/>
+				     </form>
+				  </span>
+				]]></html>
+				<div if="${pkcsMethod}">
+					<label value="${c:l('selfCertificate.description')}"></label>
+					<space></space>
+					<textbox maxlength="128" id="certdescription"/>
+					<space></space>
+					<label value="${c:l('selfcertification.pin')}"></label>
+					<space></space>
+					<textbox sclass="textbox" type="password" maxlength="10" id="certpin"/>
+			        <space></space>
+			        <button label="${c:l('selfCertificate.generate')}" onClick='generatePkcs12()'/>
+				</div>
+			</div>
+</zk>
