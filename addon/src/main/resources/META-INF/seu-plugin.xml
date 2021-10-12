@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <SoffidIAMPlugin xmlns="http://www.soffid.com/schema/iam-plugin-v1"> 
-	<name>Soffid Self-certificate addon</name>
+	<name>Soffid OTP addon</name>
 	<version>${pom.version}</version>
-	<core name="Self-certificate common classes" resource="selfcertificate-common-${pom.version}.jar"/>
-	<core name="Self-certificate core classes" resource="selfcertificate-core-${pom.version}.jar"/>
-	<web name="Self-certificate web files" resource="selfcertificate-web-${pom.version}.war"/>
-	<selfService name="Self-certificate selfservice files" resource="selfcertificate-selfservice-${pom.version}.war"/>
+	<core name="OTP common classes" resource="otp-common-${pom.version}.jar"/>
+	<core name="OTP core classes" resource="otp-core-${pom.version}.jar"/>
+	<web name="OTP web files" resource="otp-web-${pom.version}.war"/>
+	<core name="ZXing Java classes" resource="javase-3.3.0.jar"/>
+	<core name="ZXing core classes" resource="core-3.3.0.jar"/>
 </SoffidIAMPlugin>

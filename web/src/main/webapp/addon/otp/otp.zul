@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?taglib uri="/WEB-INF/tld/web/core.dsp.tld" prefix="c" ?>
+<?taglib uri="/WEB-INF/tld/soffid.dsp.tld" prefix="soffid" ?>
+
+<frame xmlns="http://www.zkoss.org/2005/zul" xmlns:h="http://www.w3.org/1999/xhtml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:zk="http://www.zkoss.org/2005/zk"
+	xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd"
+	id="frame" 	mold="div"
+	use="com.soffid.iam.addons.otp.web.MyOtpHandler">
+		
+	<datamodel id="model" rootNode="root" src="addon/otp/descriptor.xml"/>
+
+	<div sclass="single-face-card" id="card">
+		<div sclass="card__face card__face--front">
+	
+			<div use="com.soffid.iam.web.component.NavigationBar" frame="frame">
+				<menu2>
+					<menu2item image="/img/add.svg" label="${c:l('agents.zul.Afegeixnou') }" if="${soffid:isUserInRole('otp:user')}"  onClick="ref:frame.addNew"/>
+					<menu2item image="/img/download.svg" label="${c:l('zkdb.download') }" onClick="ref:frame.downloadCsv"/>
+				</menu2>
+			</div>
+	
+			<datatable enablefilter="true" id="listbox"
+				autocommit="true"
+				multiselect="true"
+				onMultiSelect="ref:frame.multiSelect" 
+				onSelect="ref:frame.multiSelect" 
+			    dataPath="/model:/otp" >
+			<attribute name="columns"><![CDATA[
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.name')}
+  value: name
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.created')}
+  value: created_datetime
+  $class: datetimeColumn
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.lastUsed')}
+  value: lastUsed_datetime
+  $class: datetimeColumn
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.status')}
+  template: >-
+    #{status.value=='C'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.CREATED') }' : 
+    status.value=='D'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.DISABLED') }' :
+    status.value=='V'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.VALIDATED') }' :
+    status.value=='L'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.LOCKED') }' : ''}
+  $class: datetimeColumn
+			]]></attribute>
+			</datatable>
+			<div width="100%" style="text-align: right"  if="${soffid:isUserInRole('otp:user')}" >
+				<div class="deleteButton" onClick="ref:frame.deleteSelected" visible="false">-</div>
+				<div class="addButton" onClick="ref:frame.addNew">+</div>
+			</div>
+		</div>
+	</div>
+
+	<window closable="false"
+		xmlns:h="http://www.w3.org/1999/xhtml"
+		id="add-window"
+		position="top, center" sizable="true"
+		title="${c:l('otp.newToken')}" visible="false"
+		style="width: 80%; max-width: 800px">
+	
+		<wizard id="wizard">
+			<attribute name="steps">
+	- ${c:l("otp.selectType")}
+	- ${c:l("otp.verifyToken")}
+	- ${c:l("user-account-new.Finish")}
+			</attribute>
+			<div id="step1">
+
+				<customfield3 dataType="STRING"
+					id="type"
+					label="${c:l('otp.selectType') }"
+					onChange="ref:frame.changeDeviceType"
+					required="true" >
+				</customfield3>		
+			
+				<customfield3 dataType="EMAIL"
+					id="email"
+					label="${c:l('otp.emailAddress') }"
+					required="true" >
+				</customfield3>		
+
+				<customfield3
+					id="phone" 
+					dataType="NUMBER"
+					label="${c:l('otp.phoneNumber') }"
+					required="true" >
+				</customfield3>		
+
+				<div style="text-align: right; width: 100%">
+					<button image="/img/undo-r.svg" label="${c:l('common.undo')}" onClick="ref:frame.addUndo" />
+					<button image="/img/next-r.svg" label="${c:l('otp.verifyToken')}" onClick="ref:frame.addStep2"/>
+				</div>
+						
+			</div>
+			<div>
+				<div style="display: block; width: 100%; text-align: center" id="imageblock">
+					<label value="${c:l('otp.instructionsa') }" style="display:block; word-break: break-word"/>
+					<image id="image" style="width: 250px height: 250px"/>
+					<label value="${c:l('otp.instructionsa2') }" style="display:block"/>
+				</div>
+				
+				<div style="display: block; width: 100%; text-align: center" id="smsblock">
+					<label value="${c:l('otp.instructionsb') }" style="display:block"/>
+				</div>
+				
+				<div style="display: block; width: 100%; text-align: center">
+					<div style="width: 300px; display: inline-block">
+						<customfield3 
+							maxlength="8"
+							label="${c:l('otp.pin') }"
+							dataType="PASSWORD"
+							required="true"
+							onOK="ref:frame.addApply"
+							id="pin"/>
+					</div>
+				</div>				
+
+				<div style="text-align: right; width: 100%">
+					<button image="/img/undo-r.svg" label="${c:l('task.filter.lblVolver')}" 
+						onClick="ref:frame.addStep1" />
+					<button image="/img/save-r.svg" label="${c:l('common.apply') }"
+						onClick="ref:frame.addApply"/>
+				</div>
+			</div>
+		</wizard>
+	</window>
+
+</frame>
+

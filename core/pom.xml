@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>selfcert</artifactId>
-		<groupId>com.soffid.iam.addon.selfcertificate</groupId>
+		<artifactId>otp</artifactId>
+		<groupId>com.soffid.iam.addon.otp</groupId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>selfcertificate-core</artifactId>
-	<packaging>ejb</packaging>
-	<name>Self-certificate Core Business Tier</name>
+	<artifactId>otp-core</artifactId>
+	<packaging>jar</packaging>
+	<name>OTP Core Business Tier</name>
 
 	<build>
 		<resources>
@@ -104,6 +104,7 @@
 						</manifest>
 					</archive>
 					<generateClient>false</generateClient>
+					<ejbVersion>3.0</ejbVersion>
 				</configuration>
 			</plugin>
     <plugin>
@@ -212,24 +213,19 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>selfcertificate-common</artifactId>
+			<artifactId>otp-common</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.soffid.iam.console</groupId>
 			<artifactId>iam-core</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
+			<version>${console.version}</version>
 			<scope>provided</scope>
-			<type>ejb</type>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-j2ee</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov-jdk14</artifactId>
-			<version>141</version>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>6.0-6</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -246,14 +242,53 @@
 		<dependency>
 			<groupId>com.soffid.iam.sync</groupId>
 			<artifactId>syncserver</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
+			<version>${console.version}</version>
 			<scope>provided</scope>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk16</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.soffid.iam.console</groupId>
+			<artifactId>iam-tomee</artifactId>
+			<version>${console.version}</version>
+		</dependency>
+	    <dependency>
+	    	<groupId>org.apache.cxf</groupId>
+	    	<artifactId>cxf-rt-rs-client</artifactId>
+	    	<version>3.1.10</version>
+	    	<scope>provided</scope>
+	    </dependency>
+		<dependency>
+    		<groupId>org.bouncycastle</groupId>
+    		<artifactId>bcprov-jdk15on</artifactId>
+    		<version>1.51</version>
+    		<scope>provided</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.bouncycastle</groupId>
+    		<artifactId>bcpkix-jdk15on</artifactId>
+    		<version>1.51</version>
+    		<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
+		    <version>3.3.0</version>
 		</dependency>
 	</dependencies>
 </project>

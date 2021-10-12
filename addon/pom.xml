@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>selfcert</artifactId>
-		<groupId>com.soffid.iam.addon.selfcertificate</groupId>
+		<artifactId>otp</artifactId>
+		<groupId>com.soffid.iam.addon.otp</groupId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>selfcertificate-addon</artifactId>
+	<artifactId>otp-addon</artifactId>
 	<packaging>jar</packaging>
-	<name>Self certificate addon package</name>
+	<name>OTP addon package</name>
 
 	<build>
 		<resources>
@@ -42,7 +42,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/classes</outputDirectory>
-							<includeGroupIds>${pom.groupId}</includeGroupIds>
+							<includeGroupIds>${pom.groupId},com.google.zxing</includeGroupIds>
 							<overWriteIfNewer>true</overWriteIfNewer>
 						</configuration>
 					</execution>
@@ -155,25 +155,35 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>selfcertificate-core</artifactId>
+			<artifactId>otp-core</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>selfcertificate-web</artifactId>
+			<artifactId>otp-web</artifactId>
 			<version>${pom.version}</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>selfcertificate-common</artifactId>
+			<artifactId>otp-common</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>selfcertificate-selfservice</artifactId>
+			<artifactId>otp-selfservice</artifactId>
 			<version>${pom.version}</version>
 			<type>war</type>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
+		    <version>3.3.0</version>
 		</dependency>
 	</dependencies>
 </project>
