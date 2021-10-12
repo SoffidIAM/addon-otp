@@ -13,7 +13,7 @@
 	import es.caib.zkib.datasource.*;
 	import org.zkoss.util.resource.Labels;
 	
-	boolean pkcsMethod = false;
+	boolean pkcsMethod = true; // keygen has been deprecated
 	String agent = Executions.getCurrent().getNativeRequest().getHeader("User-Agent");
 	if (agent != null && agent.contains ("AppleWebKit") && agent.contains ("iPad"))
 		pkcsMethod = true;
@@ -23,6 +23,8 @@
 		pkcsMethod = true;
 	if (agent != null && agent.contains ("Mozilla") && agent.contains ("Trident"))
 		pkcsMethod = true;
+	if (agent != null && agent.contains ("Firefox") )
+		pkcsMethod = false;
 	
 	
 	boolean canManage = execution.getNativeRequest().isUserInRole("selfcertificate:user/*");
@@ -81,8 +83,8 @@
 			return;			
 		}
 		javax.naming.Context jndi = new javax.naming.InitialContext();
-		com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateServiceHome home = jndi.lookup(com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateServiceHome.JNDI_NAME);
-		com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateService ejb = home.create();
+		com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateService ejb = 
+				jndi.lookup(com.soffid.iam.addons.selfcertificate.service.ejb.SelfCertificateServiceHome.JNDI_NAME);
 		byte [] data = ejb.createPkcs12(certdescription.getValue(), certpin.getValue());
 		
 		org.zkoss.zul.Filedownload.save (data, "application/x-pkcs12", "soffidcert.p12");
@@ -97,7 +99,7 @@
 		<label value="${agent }"/>
 		<toolbar>
 			<toolbarbutton image="~./img/list-add.gif" 
-				label="${c:l('selfcertificate.createnew')}" visible="${canManage}"
+				label="${c:l('selfcertificate.createNew')}" visible="${canManage}"
 				onClick="addCert()" />
 		</toolbar>
 		<grid dataPath="/certmodel:/myCerts" id="certGrid">

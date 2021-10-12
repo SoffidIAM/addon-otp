@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?page id="recover-password" title="Retrieve password manager"?>
+<?taglib uri="/WEB-INF/tld/web/core.dsp.tld" prefix="c" ?>
+<?component name="input_dada" macro-uri="/comu/input_dada.zul"?>
+<?component name="input_etiqueta" macro-uri="/comu/input_etiqueta.zul"?>
+<frame xmlns:h="http://www.w3.org/1999/xhtml" use="com.soffid.iam.addons.otp.web.ConfigurationHandler"
+	> 
+	
+	<datamodel id="model" rootNode="root"
+		src="addon/otp/configDescriptor.xml" />
+
+	<div use="com.soffid.iam.web.component.NavigationBar" frame="frame">
+	</div>
+
+	<form id="form" dataPath="/model:/configuration" width="100%">
+		<div>
+			<div sclass="section">
+				<customfield3 label="${c:l('otp.config.email') }" dataType="SEPARATOR"/>
+				<customfield3 label="${c:l('otp.config.enabled')}" dataType="BOOLEAN" bind="@allowEmail" />
+				<customfield3 label="${c:l('otp.config.digits')}" dataType="NUMBER" bind="@emailDigits" />
+				<customfield3 label="${c:l('otp.config.subject')}" dataType="STRING" bind="@emailSubject"  />
+				<customfield3 label="${c:l('otp.config.body')}" dataType="STRING" multiline="true" bind="@emailBody" />
+			</div>
+	
+			<div sclass="section">
+				<customfield3 label="${c:l('otp.config.sms') }" dataType="SEPARATOR"/>
+				<customfield3 label="${c:l('otp.config.enabled')}" dataType="BOOLEAN" bind="@allowSms" />
+				<customfield3 label="${c:l('otp.config.digits')}" dataType="NUMBER" bind="smsDigits" />
+				<customfield3 label="${c:l('otp.config.url')}" dataType="STRING" bind="@smsUrl"  />
+				<customfield3 label="${c:l('otp.config.method')}" dataType="STRING" bind="@smsMethod" />
+				<customfield3 label="${c:l('otp.config.headers')}" dataType="STRING" bind="@smsHeaders" multiline="true" />
+				<customfield3 label="${c:l('otp.config.httpbody')}" dataType="STRING" multiline="true" bind="@smsBody" />
+				<customfield3 label="${c:l('otp.config.responseToCheck')}" dataType="STRING" multiline="true" bind="@smsResponseToCheck" />
+			</div>
+
+			<div sclass="section">
+				<customfield3 label="${c:l('otp.config.totp') }" dataType="SEPARATOR"/>
+				<customfield3 label="${c:l('otp.config.enabled')}" dataType="BOOLEAN" bind="@allowTotp" />
+				<customfield3 label="${c:l('otp.config.digits')}" dataType="NUMBER" bind="totpDigits" />
+				<customfield3 label="${c:l('otp.config.algorithm')}" dataType="STRING" bind="@totpAlgorithm" listOfValues="HmacSHA1, HmacSHA256" />
+				<customfield3 label="${c:l('otp.config.issuer')}" dataType="STRING" bind="@totpIssuer"  />
+			</div>
+
+			<div sclass="section">
+				<customfield3 label="${c:l('otp.config.hotp') }" dataType="SEPARATOR"/>
+				<customfield3 label="${c:l('otp.config.enabled')}" dataType="BOOLEAN" bind="@allowHotp" />
+				<customfield3 label="${c:l('otp.config.digits')}" dataType="NUMBER" bind="hotpDigits" />
+				<customfield3 label="${c:l('otp.config.algorithm')}" dataType="STRING" bind="@hotpAlgorithm" listOfValues="HmacSHA1, HmacSHA256" />
+				<customfield3 label="${c:l('otp.config.issuer')}" dataType="STRING" bind="@hotpIssuer"  />
+			</div>
+		</div>
+
+		<div style="margin-top: 2em">
+			<button image="/img/save-r.svg" label="${c:l('task.filter.lblConfirmaCambios') }" onClick="ref:frame.commit"
+				style="text-align:right"/>
+		</div>
+	</form>
+</frame>

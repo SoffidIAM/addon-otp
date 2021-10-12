@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?taglib uri="/WEB-INF/tld/web/core.dsp.tld" prefix="c" ?>
+<?taglib uri="/WEB-INF/tld/soffid.dsp.tld" prefix="soffid" ?>
+
+<frame xmlns:h="http://www.w3.org/1999/xhtml" mold="div" style="position: relative" 
+	parentPath="${arg.listbox }"
+	model="${arg.model }"
+	use="com.soffid.iam.addons.otp.web.UserOtpHandler" id="frame">
+
+	<div class="navigation-bar dummy">
+		<label bind="//user/listbox:/@userName"></label> - <label bind="//user/listbox:/@fullName"/>
+	</div>
+
+	<datatable enablefilter="true" id="listbox"
+		autocommit="true"
+		multiselect="true"
+		onMultiSelect="ref:frame.multiSelect" 
+		onSelect="ref:frame.select" 
+	    dataPath="${arg.listbox }:/otp" >
+	<attribute name="columns"><![CDATA[
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.name')}
+  value: name
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.created')}
+  value: created_datetime
+  $class: datetimeColumn
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.lastUsed')}
+  value: lastUsed_datetime
+  $class: datetimeColumn
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.status')}
+  template: >-
+    #{status.value=='C'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.CREATED') }' : 
+    status.value=='D'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.DISABLED') }' :
+    status.value=='V'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.VALIDATED') }' :
+    status.value=='L'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.LOCKED') }' : ''}
+  $class: datetimeColumn
+			]]></attribute>
+	</datatable>
+	<div width="100%" style="text-align: right"  >
+		<div class="deleteButton" onClick="ref:frame.deleteSelected" visible="false"  if="${soffid:isUserInRole('otp:cancel')}">-</div>
+		<div class="addButton" onClick="ref:frame.addNew">+</div>
+	</div>
+
+	<window closable="false"
+		xmlns:h="http://www.w3.org/1999/xhtml"
+		id="add-window"
+		position="top, center" sizable="true"
+		title="${c:l('otp.newToken')}" visible="false"
+		style="width: 80%; max-width: 800px">
+	
+		<wizard id="wizard">
+			<attribute name="steps">
+	- ${c:l("otp.selectType")}
+	- ${c:l("otp.verifyToken")}
+	- ${c:l("user-account-new.Finish")}
+			</attribute>
+			<div id="step1">
+
+				<customfield3 dataType="STRING"
+					id="type"
+					label="${c:l('otp.selectType') }"
+					onChange="ref:frame.changeDeviceType"
+					required="true" >
+				</customfield3>		
+			
+				<customfield3 dataType="EMAIL"
+					id="email"
+					label="${c:l('otp.emailAddress') }"
+					required="true" >
+				</customfield3>		
+
+				<customfield3
+					id="phone" 
+					dataType="NUMBER"
+					label="${c:l('otp.phoneNumber') }"
+					required="true" >
+				</customfield3>		
+
+				<div style="text-align: right; width: 100%">
+					<button image="/img/undo-r.svg" label="${c:l('common.undo')}" onClick="ref:frame.addUndo" />
+					<button image="/img/next-r.svg" label="${c:l('otp.verifyToken')}" onClick="ref:frame.addStep2"/>
+				</div>
+						
+			</div>
+			<div>
+				<div style="display: block; width: 100%; text-align: center" id="imageblock">
+					<label value="${c:l('otp.instructionsa') }" style="display:block; word-break: break-word"/>
+					<image id="image" style="width: 250px height: 250px"/>
+				</div>
+				
+				<div style="display: block; width: 100%; text-align: center" id="smsblock">
+					<label value="${c:l('otp.instructionsb2') }" style="display:block"/>
+				</div>
+				
+				<div style="text-align: right; width: 100%">
+					<button image="/img/save-r.svg" label="${c:l('common.apply') }"
+						onClick="ref:frame.addApply"/>
+				</div>
+			</div>
+		</wizard>
+	</window>
+
+	<window closable="false"
+		xmlns:h="http://www.w3.org/1999/xhtml"
+		id="properties-window"
+		position="top, center" sizable="true"
+		title="${c:l('otp.device')}" visible="false"
+		style="width: 80%; max-width: 800px">
+
+		<div sclass="navigation-bar dummy">
+			<label bind="${arg.listbox }:/userName"></label>
+			-
+			<label bind="${arg.listbox }:/fullName"></label>
+			<pager datatable="../listbox"/>
+		</div>
+
+		<form id="form" width="100%" dataPath="../listbox:/">
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.name')}" dataType="STRING" bind="@name" readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.type')}" dataType="STRING" bind="@type" enumeration="com.soffid.iam.addons.otp.common.OtpDeviceType" readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.email')}" dataType="EMAIL" bind="@email" readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.phone')}" dataType="STRING" bind="@phone" readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.lastUsed')}" dataType="DATE_TIME" bind="@lastUsed" readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.created')}" dataType="DATE_TIME" bind='@created' readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.fails')}" dataType="NUMBER" bind='@fails' readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.status')}" dataType="STRING" bind="@status" 
+				enumeration="com.soffid.iam.addons.otp.common.OtpStatus" readonly="false" onChange="ref:frame.changeStatus"/>
+		</form>
+		<div style="text-align: right; width: 100%">
+			<button image="/img/undo-r.svg" label="${c:l('error.zul.Tancar')}" 
+				onClick="ref:frame.closeDetails">
+			</button>
+		</div>
+	</window>
+</frame>
+

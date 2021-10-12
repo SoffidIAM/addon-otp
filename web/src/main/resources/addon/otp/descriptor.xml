@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zkib-model>
+	<datanode name="root">
+		<finder name="otp" type="otp" refreshAfterCommit="true">
+			<ejb-finder jndi="java:/module/OtpSelfService-v2"
+				method="findMyDevices">
+			</ejb-finder>
+			<new-instance-bean className="com.soffid.iam.addons.otp.common.OtpDevice"> 
+			</new-instance-bean>
+		</finder>
+	</datanode>
+	
+	
+	<datanode name="otp">
+		<ejb-handler jndi="java:/module/OtpSelfService-v2">
+			<delete-method method="cancelDevice">
+				<parameter value="${instance}" />
+			</delete-method>
+		</ejb-handler>
+	</datanode>
+</zkib-model>

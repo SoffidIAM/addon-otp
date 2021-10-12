@@ -16,18 +16,28 @@
 
 <autoritzacions>
 	<autoritzacio> 
-		<codi>selfcertificate:query</codi> 
-		<descripcio>Query user generated certificates</descripcio> 
-		<ambit>Self-certificate</ambit> 
+		<codi>otp:user</codi> 
+		<descripcio>Use and register it's own OTP Devices</descripcio> 
+		<ambit>OTP</ambit> 
 	</autoritzacio> 
 	<autoritzacio> 
-		<codi>selfcertificate:manage</codi> 
-		<descripcio>Manage user generated certificates</descripcio> 
-		<ambit>Self-certificate</ambit> 
+		<codi>otp:manage</codi> 
+		<descripcio>Manage user OTP devices</descripcio> 
+		<ambit>OTP</ambit> 
 	</autoritzacio> 
 	<autoritzacio> 
-		<codi>selfcertificate:user</codi> 
-		<descripcio>Self generate certificates</descripcio> 
-		<ambit>Self-certificate</ambit> 
+		<codi>otp:query</codi> 
+		<descripcio>Query user OTP devices</descripcio> 
+		<ambit>OTP</ambit> 
+	</autoritzacio> 
+	<autoritzacio> 
+		<codi>otp:cancel</codi> 
+		<descripcio>Cancel user OTP devices</descripcio> 
+		<ambit>OTP</ambit> 
+	</autoritzacio> 
+	<autoritzacio> 
+		<codi>otp:unlock</codi> 
+		<descripcio>Unlock  user OTP devices</descripcio> 
+		<ambit>OTP</ambit> 
 	</autoritzacio> 
 </autoritzacions>

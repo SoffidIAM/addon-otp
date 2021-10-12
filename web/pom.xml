@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>selfcert</artifactId>
-		<groupId>com.soffid.iam.addon.selfcertificate</groupId>
+		<artifactId>otp</artifactId>
+		<groupId>com.soffid.iam.addon.otp</groupId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>selfcertificate-web</artifactId>
+	<artifactId>otp-web</artifactId>
 	<packaging>war</packaging>
-	<name>Self certificate web addon</name>
+	<name>OTP web addon</name>
 	<build>
 		<resources>
 			<resource>
@@ -69,13 +69,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>selfcertificate-common</artifactId>
+			<artifactId>otp-common</artifactId>
 			<version>${pom.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>selfcertificate-core</artifactId>
+			<artifactId>otp-core</artifactId>
 			<version>${pom.version}</version>
 			<type>ejb</type>
 			<scope>provided</scope>
@@ -98,34 +98,28 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.soffid.zkib</groupId>
-			<artifactId>zkiblaf</artifactId>
-			<version>1.8</version>
+			<groupId>com.soffid.iam.console</groupId>
+			<artifactId>iam-web</artifactId>
+			<version>${console.version}</version>
 			<classifier>classes</classifier>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.soffid.iam.console</groupId>
+			<artifactId>iam-common</artifactId>
+			<version>${console.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.soffid.zkib</groupId>
 			<artifactId>zkdb</artifactId>
-			<version>1.8</version>
+			<version>2.1.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-j2ee</artifactId>
-			<version>3.2.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>es.caib.jboss</groupId>
-			<artifactId>seyconsession-common</artifactId>
-			<version>2.3.8-caib5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
+			<groupId>com.soffid.zkib</groupId>
+			<artifactId>zkiblaf</artifactId>
+			<version>2.0</version> 
+			<classifier>classes</classifier>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
