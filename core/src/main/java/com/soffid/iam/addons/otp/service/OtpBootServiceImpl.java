@@ -21,6 +21,14 @@ public class OtpBootServiceImpl extends OtpBootServiceBase {
 
 	@Override
 	protected void handleSyncServerBoot() throws Exception {
+		final InternalOTPHandler handler = new InternalOTPHandler();
+		handler.setHotpValidationService( getHotpValidationService());
+		handler.setTotpValidationService( getTotpValidationService());
+		handler.setEmailValidationService( getEmailValidationService());
+		handler.setSmsValidationService( getSmsValidationService());
+		handler.setOtpDeviceEntityDao( getOtpDeviceEntityDao());
+		handler.setOtpService(getOtpService());
+		getOTPValidationService().registerOTPHandler(handler);
 	}
 
 	@Override
