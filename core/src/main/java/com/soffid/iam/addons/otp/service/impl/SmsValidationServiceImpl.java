@@ -103,8 +103,10 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 		log.info("SMS gateway response: "+out.toString("UTF-8"));
 		String smsResponseCheck = cfg.getSmsResponseToCheck();
 		if (smsResponseCheck != null) {
-			if (!out.toString("UTF-8").contains(smsResponseCheck))
+			if (!out.toString("UTF-8").contains(smsResponseCheck)) {
+				log.info("Error sending SMS: "+out.toString("UTF-8"));
 				throw new InternalErrorException("Cannot send SMS message");
+			}
 		}
 	}
 
