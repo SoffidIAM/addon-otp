@@ -95,8 +95,11 @@ public class OtpServiceImpl extends OtpServiceBase {
 		return device;
 	}
 
-	private BufferedImage generateTotpQR(OtpDeviceEntity entity, byte[] key) throws UnsupportedEncodingException, WriterException {
-		String url = "otpauth://totp/Soffid:"+entity.getName()+" "+ 
+	private BufferedImage generateTotpQR(OtpDeviceEntity entity, byte[] key) throws Exception {
+		OtpConfig cfg = handleGetConfiguration();
+		String url = "otpauth://totp/"+
+				URLEncoder.encode(cfg.getTotpIssuer(),"UTF-8")+
+				":"+entity.getName()+" "+ 
 				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8");
 		url += "?secret="+encodeKey(key);
 		url += "&issuer=Soffid";
@@ -114,14 +117,17 @@ public class OtpServiceImpl extends OtpServiceBase {
    	    return img;
 	}
 
-	private BufferedImage generateHotpQR(OtpDeviceEntity entity, byte[] key) throws UnsupportedEncodingException, WriterException {
-		String url = "otpauth://hotp/Soffid:"+entity.getName()+" "+ 
+	private BufferedImage generateHotpQR(OtpDeviceEntity entity, byte[] key) throws Exception {
+		OtpConfig cfg = handleGetConfiguration();
+		String url = "otpauth://hotp/"+
+				URLEncoder.encode(cfg.getTotpIssuer(),"UTF-8")+
+				":"+entity.getName()+" "+ 
 				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8");
 		url += "?secret="+encodeKey(key);
 		url += "&issuer=Soffid";
 		url += "&algorithm=SHA1";
 		url += "&digits=6";
-		url += "&counter=0";
+		url += "&counter=1";
 		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8");
 		
 		QRCodeWriter barcodeWriter = new QRCodeWriter();
