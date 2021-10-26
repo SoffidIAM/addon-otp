@@ -70,7 +70,7 @@
 
 				<customfield3
 					id="phone" 
-					dataType="NUMBER"
+					dataType="STRING"
 					label="${c:l('otp.phoneNumber') }"
 					required="true" >
 				</customfield3>		
