@@ -5,6 +5,8 @@
 //
 
 package com.soffid.iam.addons.otp.model;
+import java.util.Date;
+
 import com.soffid.iam.addons.otp.common.OtpDeviceType;
 import com.soffid.iam.addons.otp.common.OtpStatus;
 import com.soffid.iam.model.TenantEntity;
@@ -51,6 +53,11 @@ public abstract class OtpDeviceEntity {
 	@Nullable
 	public Long lastUsedValue;
 	
+	@Description("The last time a SMS was sent")
+	@Column (name="OTP_LASISS")
+	@Nullable
+	public Date lastIssued;
+	
 	@Description("Failed attepms")
 	@Column (name="OTP_FAILS")
 	int fails;
@@ -69,6 +76,11 @@ public abstract class OtpDeviceEntity {
 	@Column (name="OTP_PHONE")
 	@Nullable
 	String phone;
+
+	@Description("User PIN")
+	@Column (name="OTP_PIN")
+	@Nullable
+	String pin;
 
 
 	@DaoFinder("select sce\n"

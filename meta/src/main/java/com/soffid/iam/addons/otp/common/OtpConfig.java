@@ -17,6 +17,8 @@ public class OtpConfig {
 	
 	public boolean allowEmail;
 	
+	public boolean allowPin;
+
 	@Nullable
 	public String smsUrl;
 	@Nullable
@@ -40,4 +42,8 @@ public class OtpConfig {
 	@Nullable public Integer hotpDigits;
 	@Nullable public String hotpAlgorithm;
 	@Nullable public String hotpIssuer;
+
+
+	@Nullable public Integer pinLength;
+	@Nullable public Integer pinDigits;
 }

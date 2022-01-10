@@ -13,6 +13,7 @@ import com.soffid.iam.addons.otp.roles.otp_user;
 import com.soffid.iam.addons.otp.roles.tothom;
 import com.soffid.iam.addons.otp.service.impl.EmailValidationService;
 import com.soffid.iam.addons.otp.service.impl.HotpValidationService;
+import com.soffid.iam.addons.otp.service.impl.PinValidationService;
 import com.soffid.iam.addons.otp.service.impl.SmsValidationService;
 import com.soffid.iam.addons.otp.service.impl.TotpValidationService;
 import com.soffid.mda.annotation.*;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 	EmailValidationService.class,
 	HotpValidationService.class,
 	TotpValidationService.class,
+	PinValidationService.class,
 	SmsValidationService.class})
 @Service ( grantees = {otp_user.class})
 public abstract class OtpSelfService {

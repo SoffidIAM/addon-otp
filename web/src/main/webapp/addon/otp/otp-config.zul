@@ -48,6 +48,14 @@
 				<customfield3 label="${c:l('otp.config.algorithm')}" dataType="STRING" bind="@hotpAlgorithm" listOfValues="HmacSHA1, HmacSHA256" />
 				<customfield3 label="${c:l('otp.config.issuer')}" dataType="STRING" bind="@hotpIssuer"  />
 			</div>
+			
+			<div sclass="section">
+				<customfield3 label="${c:l('otp.config.pin') }" dataType="SEPARATOR"/>
+				<customfield3 label="${c:l('otp.config.enabled')}" dataType="BOOLEAN" bind="@allowPin" />
+				<customfield3 label="${c:l('otp.config.length')}" dataType="NUMBER" bind="@pinLength" />
+				<customfield3 label="${c:l('otp.config.lengthToAsk')}" dataType="NUMBER" bind="@pinDigits"  />
+			</div>
+			
 		</div>
 
 		<div style="margin-top: 2em">

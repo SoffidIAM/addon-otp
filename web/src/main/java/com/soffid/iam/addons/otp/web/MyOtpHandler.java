@@ -17,6 +17,7 @@ import com.soffid.iam.addons.otp.common.OtpDeviceType;
 import com.soffid.iam.addons.otp.service.ejb.OtpSelfService;
 import com.soffid.iam.addons.otp.service.ejb.OtpSelfServiceHome;
 import com.soffid.iam.api.Password;
+import com.soffid.iam.utils.ConfigurationCache;
 import com.soffid.iam.web.component.CustomField3;
 import com.soffid.iam.web.component.FrameHandler;
 
@@ -54,8 +55,10 @@ public class MyOtpHandler extends FrameHandler {
 		CustomField3 type = (CustomField3) w.getFellow("type");
 		CustomField3 phone = (CustomField3) w.getFellow("phone");
 		CustomField3 email = (CustomField3) w.getFellow("email");
+		CustomField3 pin = (CustomField3) w.getFellow("pin0");
 		String s = (String) type.getValue();
 		OtpDeviceType t = s == null? null: OtpDeviceType.fromString(s);
+		pin.setVisible(t == OtpDeviceType.PIN);
 		phone.setVisible(t == OtpDeviceType.SMS);
 		email.setVisible(t == OtpDeviceType.EMAIL);
 	}
@@ -72,25 +75,51 @@ public class MyOtpHandler extends FrameHandler {
 		CustomField3 type = (CustomField3) w.getFellow("type");
 		CustomField3 phone = (CustomField3) w.getFellow("phone");
 		CustomField3 email = (CustomField3) w.getFellow("email");
+		CustomField3 pin = (CustomField3) w.getFellow("pin0");
 		if (type.attributeValidateAll() &&
 				(!phone.isVisible() || phone.attributeValidateAll()) &&
 				(!email.isVisible() || email.attributeValidateAll())) {
+			OtpSelfService ejb = (OtpSelfService) new InitialContext().lookup(OtpSelfServiceHome.JNDI_NAME);
+			if (pin.isVisible()) {
+				Password p = (Password) pin.getValue(); 
+				if (p == null || p.getPassword().isEmpty())
+				{
+					pin.setWarning(0, "Please, enter a value" );
+					return;
+				}
+				int length = 8;
+				try {
+					length = Integer.parseInt( ConfigurationCache.getProperty("otp.pin.length") );
+				} catch (Exception e) {}
+				if (p.getPassword().length() < length) {
+					pin.setWarning(0, String.format("Too short. Enter at least %d digits", length));
+					return;
+				}
+			}
+			String s = (String) type.getValue();
+			OtpDeviceType t = s == null? null: OtpDeviceType.fromString(s);
 			currentDevice = new OtpDevice();
-			currentDevice.setType(OtpDeviceType.fromString(type.getValue().toString()));
+			currentDevice.setType(t);
+			currentDevice.setPin((Password) pin.getValue());
 			currentDevice.setEmail((String) email.getValue());
 			currentDevice.setPhone((String) phone.getValue());
 			currentDevice.setCreated(new Date());
-			OtpSelfService ejb = (OtpSelfService) new InitialContext().lookup(OtpSelfServiceHome.JNDI_NAME);
 			currentDevice = ejb.registerDevice(currentDevice);
 			getModel().refresh();
 			wizard.next();
 			Image i = (Image) w.getFellow("image");
-			if (currentDevice.getImage() == null) {
+			if (t == OtpDeviceType.PIN) {
+				w.getFellow("imageblock").setVisible(false);
+				w.getFellow("smsblock").setVisible(false);
+				w.getFellow("pinblock").setVisible(true);
+			} else if (currentDevice.getImage() == null) {
 				w.getFellow("imageblock").setVisible(false);
 				w.getFellow("smsblock").setVisible(true);
+				w.getFellow("pinblock").setVisible(false);
 			} else {
 				w.getFellow("imageblock").setVisible(true);
 				w.getFellow("smsblock").setVisible(false);
+				w.getFellow("pinblock").setVisible(false);
 				i.setContent(currentDevice.getImage());
 			}
 			CustomField3 cf3 = (CustomField3) w.getFellow("pin");

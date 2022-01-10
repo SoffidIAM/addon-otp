@@ -29,7 +29,7 @@ public class HotpValidationServiceImpl extends HotpValidationServiceBase {
 		byte buffer[] =  new Base32().decode(entity.getAuthKey());
         final Key key = new SecretKeySpec(buffer, "RAW");
         
-        long lastUsed = entity.getLastUsedValue() == null? 0: entity.getLastUsedValue().longValue();
+        long lastUsed = entity.getLastUsedValue() == null? -1: entity.getLastUsedValue().longValue();
         
 		// 5 minutes offset allowed
 		int intValue = Integer.parseInt(pin);

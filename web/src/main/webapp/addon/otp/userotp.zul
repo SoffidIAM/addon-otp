@@ -75,6 +75,12 @@
 					required="true" >
 				</customfield3>		
 
+				<customfield3 dataType="PASSWORD"
+					id="pin0"
+					label="${c:l('otp.pin') }"
+					required="true" >
+				</customfield3>		
+
 				<div style="text-align: right; width: 100%">
 					<button image="/img/undo-r.svg" label="${c:l('common.undo')}" onClick="ref:frame.addUndo" />
 					<button image="/img/next-r.svg" label="${c:l('otp.verifyToken')}" onClick="ref:frame.addStep2"/>

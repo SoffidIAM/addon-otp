@@ -18,6 +18,7 @@ import com.soffid.iam.addons.otp.roles.otp_query;
 import com.soffid.iam.addons.otp.roles.otp_unlock;
 import com.soffid.iam.addons.otp.service.impl.EmailValidationService;
 import com.soffid.iam.addons.otp.service.impl.HotpValidationService;
+import com.soffid.iam.addons.otp.service.impl.PinValidationService;
 import com.soffid.iam.addons.otp.service.impl.SmsValidationService;
 import com.soffid.iam.addons.otp.service.impl.TotpValidationService;
 import com.soffid.mda.annotation.Depends;
@@ -38,6 +39,7 @@ import es.caib.seycon.ng.servei.XarxaService;
 	HotpValidationService.class,
 	SmsValidationService.class,
 	EmailValidationService.class,
+	PinValidationService.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	ConfiguracioService.class,
 	ConfiguracioEntity.class})

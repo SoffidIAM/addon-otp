@@ -61,6 +61,14 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 	protected void handleSendPin(OtpDeviceEntity device, OtpConfig cfg) throws Exception {
 		if (!cfg.isAllowSms())
 			throw new InternalErrorException("SMS OTP is disabled by system administrator");
+		
+		if (device.getLastIssued() != null &&
+				(device.getLastUsed() == null || device.getLastUsed().before(device.getLastIssued())) &&
+				(device.getLastIssued().getTime() > System.currentTimeMillis() - 60000) &&
+				device.getFails() < 3) {
+			// Use already sent SMS
+			return;
+		}
 		SecureRandom sr = new SecureRandom();
 		String pin = "";
 		for (int i = 0; i < 8; i++) {
@@ -69,6 +77,8 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		byte[] digest = md.digest(pin.getBytes("UTF-8"));
 		device.setAuthKey(Base64.getEncoder().encodeToString(digest));
+		device.setFails(0);
+		device.setLastIssued(new Date());
 		getOtpDeviceEntityDao().update(device);
 
 		String smsUrl = cfg.getSmsUrl();

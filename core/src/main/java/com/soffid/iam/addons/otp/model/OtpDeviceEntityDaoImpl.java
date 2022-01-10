@@ -8,6 +8,7 @@ public class OtpDeviceEntityDaoImpl extends OtpDeviceEntityDaoBase {
 	public void toOtpDevice(OtpDeviceEntity source, OtpDevice target) {
 		super.toOtpDevice(source, target);
 		target.setUser(source.getUser().getUserName());
+		target.setPin(null);
 	}
 
 }

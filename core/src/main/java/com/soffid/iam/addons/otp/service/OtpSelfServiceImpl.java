@@ -9,6 +9,7 @@ import com.soffid.iam.addons.otp.common.OtpDevice;
 import com.soffid.iam.addons.otp.common.OtpDeviceType;
 import com.soffid.iam.addons.otp.common.OtpStatus;
 import com.soffid.iam.addons.otp.model.OtpDeviceEntity;
+import com.soffid.iam.api.Password;
 import com.soffid.iam.utils.Security;
 
 import es.caib.seycon.ng.exception.InternalErrorException;
@@ -37,6 +38,9 @@ public class OtpSelfServiceImpl extends OtpSelfServiceBase {
 		if (entity.getType() == OtpDeviceType.TOTP) {
 			valid = getTotpValidationService().validatePin(entity, getOtpService().getConfiguration(), pin);
 		}
+		if (entity.getType() == OtpDeviceType.PIN) {
+			valid = getPinValidationService().validatePin(entity, getOtpService().getConfiguration(), pin);
+		}
 		if (valid) {
 			entity.setStatus(OtpStatus.VALIDATED);
 			getOtpDeviceEntityDao().update(entity);
@@ -46,6 +50,7 @@ public class OtpSelfServiceImpl extends OtpSelfServiceBase {
 
 	@Override
 	protected OtpDevice handleRegisterDevice(OtpDevice device) throws Exception {
+		Password pin = device.getPin();
 		device = getOtpService().registerDevice(Security.getCurrentUser(), device);
 		OtpDeviceEntity entity = getOtpDeviceEntityDao().load(device.getId());
 		entity.setStatus(OtpStatus.CREATED);
@@ -56,6 +61,11 @@ public class OtpSelfServiceImpl extends OtpSelfServiceBase {
 		}
 		if (device.getType() == OtpDeviceType.SMS) {
 			getSmsValidationService().sendPin(entity, cfg);
+		}
+		if (device.getType() == OtpDeviceType.PIN) {
+			OtpConfig cfg2 = new OtpConfig(cfg);
+			cfg2.setPinDigits(pin.getPassword().length());
+			getPinValidationService().selectDigits(entity, cfg2);
 		}
 		return device;
 		
@@ -89,6 +99,7 @@ public class OtpSelfServiceImpl extends OtpSelfServiceBase {
 		if (cfg.isAllowSms()) l.add (OtpDeviceType.SMS);
 		if (cfg.isAllowHotp()) l.add (OtpDeviceType.HOTP);
 		if (cfg.isAllowTotp()) l.add (OtpDeviceType.TOTP);
+		if (cfg.isAllowPin()) l.add (OtpDeviceType.PIN);
 		return l;
 	}
 

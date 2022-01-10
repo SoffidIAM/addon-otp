@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base32;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -89,6 +88,13 @@ public class OtpServiceImpl extends OtpServiceBase {
 			byte[] key = getHotpValidationService().generateKey(entity, handleGetConfiguration());
 			image = generateHotpQR(entity, key);
 		}
+		if (device.getType() == OtpDeviceType.PIN) {
+			OtpConfig cfg = handleGetConfiguration();
+			if (device.getPin().getPassword().length() < cfg.getPinLength())
+				throw new InternalErrorException(String.format("The security number must contain at least %d numbers", cfg.getPinLength()));
+			entity.setName("Security number");
+			entity.setPin(device.getPin().toString());
+		}
 		getOtpDeviceEntityDao().create(entity);
 		device = getOtpDeviceEntityDao().toOtpDevice(entity);
 		device.setImage(image);
@@ -127,7 +133,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		url += "&issuer=Soffid";
 		url += "&algorithm=SHA1";
 		url += "&digits=6";
-		url += "&counter=1";
+		url += "&counter=0";
 		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8");
 		
 		QRCodeWriter barcodeWriter = new QRCodeWriter();
@@ -212,6 +218,10 @@ public class OtpServiceImpl extends OtpServiceBase {
 		configuration.setTotpDigits(Integer.decode( getConfigDefault("otp.totp.digits", "6")));
 		configuration.setTotpIssuer(getConfigDefault("otp.totp.issuer", "Issuer"));
 		
+		configuration.setAllowPin("true".equals(getConfigDefault("otp.pin.allow", "false")));
+		configuration.setPinDigits( Integer.parseInt( getConfigDefault("otp.pin.digits", "3")) );
+		configuration.setPinLength( Integer.parseInt( getConfigDefault("otp.pin.length", "8")));
+
 		return configuration;
 	}
 
@@ -238,10 +248,17 @@ public class OtpServiceImpl extends OtpServiceBase {
 		updateConfig("otp.hotp.allow", Boolean.toString(config.isAllowHotp()));
 		updateConfig("otp.hotp.algorithm", config.getHotpAlgorithm());
 		updateConfig("otp.hotp.digits", config.getHotpDigits());
+		updateConfig("otp.hotp.issuer", config.getHotpIssuer());
 		
 		updateConfig("otp.totp.allow", Boolean.toString(config.isAllowTotp()));
 		updateConfig("otp.totp.algorithm", config.getTotpAlgorithm());
 		updateConfig("otp.totp.digits", config.getTotpDigits());
+		updateConfig("otp.totp.issuer", config.getTotpIssuer());
+		
+		updateConfig("otp.pin.allow", config.isAllowPin());
+		updateConfig("otp.pin.digits", config.getPinDigits());
+		updateConfig("otp.pin.length", config.getPinLength());
+		
 	}
 	
 	

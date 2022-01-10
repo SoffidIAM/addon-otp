@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import com.soffid.iam.model.TenantEntity;
 import com.soffid.mda.annotation.*;
 
+import es.caib.seycon.ng.comu.Password;
 import es.caib.seycon.ng.model.MaquinaEntity;
 import es.caib.seycon.ng.model.UsuariEntity;
 
@@ -44,10 +45,13 @@ public class OtpDevice {
 	@Nullable
 	String email;
 
-
 	@Description("Target mobile phone")
 	@Nullable
 	String phone;
+
+	@Description("Security PIN")
+	@Nullable
+	Password pin;
 
 	@Description("QR Code to configure the OTP client device. Only present on creation")
 	@Nullable

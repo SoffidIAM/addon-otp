@@ -80,6 +80,12 @@
 					required="true" >
 				</customfield3>		
 
+				<customfield3 dataType="PASSWORD"
+					id="pin0"
+					label="${c:l('otp.pin') }"
+					required="true" >
+				</customfield3>		
+
 				<customfield3
 					id="phone" 
 					dataType="STRING"
@@ -104,10 +110,14 @@
 					<label value="${c:l('otp.instructionsb') }" style="display:block"/>
 				</div>
 				
+				<div style="display: block; width: 100%; text-align: center" id="pinblock">
+					<label value="${c:l('otp.instructionsc') }" style="display:block"/>
+				</div>
+
 				<div style="display: block; width: 100%; text-align: center">
 					<div style="width: 300px; display: inline-block">
 						<customfield3 
-							maxlength="8"
+							maxlength="16"
 							label="${c:l('otp.pin') }"
 							dataType="PASSWORD"
 							required="true"

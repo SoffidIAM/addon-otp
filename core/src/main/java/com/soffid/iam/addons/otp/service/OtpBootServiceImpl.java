@@ -15,6 +15,7 @@ public class OtpBootServiceImpl extends OtpBootServiceBase {
 		handler.setEmailValidationService( getEmailValidationService());
 		handler.setSmsValidationService( getSmsValidationService());
 		handler.setOtpDeviceEntityDao( getOtpDeviceEntityDao());
+		handler.setPinValidationService(getPinValidationService());
 		handler.setOtpService(getOtpService());
 		getOTPValidationService().registerOTPHandler(handler);
 	}
@@ -26,6 +27,7 @@ public class OtpBootServiceImpl extends OtpBootServiceBase {
 		handler.setTotpValidationService( getTotpValidationService());
 		handler.setEmailValidationService( getEmailValidationService());
 		handler.setSmsValidationService( getSmsValidationService());
+		handler.setPinValidationService(getPinValidationService());
 		handler.setOtpDeviceEntityDao( getOtpDeviceEntityDao());
 		handler.setOtpService(getOtpService());
 		getOTPValidationService().registerOTPHandler(handler);

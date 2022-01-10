@@ -21,6 +21,7 @@ import com.soffid.iam.addons.otp.service.ejb.OtpSelfServiceHome;
 import com.soffid.iam.addons.otp.service.ejb.OtpService;
 import com.soffid.iam.addons.otp.service.ejb.OtpServiceHome;
 import com.soffid.iam.api.Password;
+import com.soffid.iam.utils.ConfigurationCache;
 import com.soffid.iam.web.component.CustomField3;
 import com.soffid.iam.web.component.FrameHandler;
 
@@ -65,8 +66,10 @@ public class UserOtpHandler extends FrameHandler {
 		CustomField3 type = (CustomField3) w.getFellow("type");
 		CustomField3 phone = (CustomField3) w.getFellow("phone");
 		CustomField3 email = (CustomField3) w.getFellow("email");
+		CustomField3 pin = (CustomField3) w.getFellow("pin0");
 		String s = (String) type.getValue();
-		OtpDeviceType t = s == null? null: OtpDeviceType.fromString(s);
+		OtpDeviceType t = s == null || s.trim().isEmpty() ? null: OtpDeviceType.fromString(s);
+		pin.setVisible(t == OtpDeviceType.PIN);
 		phone.setVisible(t == OtpDeviceType.SMS);
 		email.setVisible(t == OtpDeviceType.EMAIL);
 	}
@@ -87,11 +90,31 @@ public class UserOtpHandler extends FrameHandler {
 		CustomField3 type = (CustomField3) w.getFellow("type");
 		CustomField3 phone = (CustomField3) w.getFellow("phone");
 		CustomField3 email = (CustomField3) w.getFellow("email");
+		CustomField3 pin = (CustomField3) w.getFellow("pin0");
 		if (type.attributeValidateAll() &&
 				(!phone.isVisible() || phone.attributeValidateAll()) &&
 				(!email.isVisible() || email.attributeValidateAll())) {
+			if (pin.isVisible()) {
+				Password p = (Password) pin.getValue(); 
+				if (p == null || p.getPassword().isEmpty())
+				{
+					pin.setWarning(0, "Please, enter a value" );
+					return;
+				}
+				int length = 8;
+				try {
+					length = Integer.parseInt( ConfigurationCache.getProperty("otp.pin.length") );
+				} catch (Exception e) {}
+				if (p.getPassword().length() < length) {
+					pin.setWarning(0, String.format("Too short. Enter at least %d digits", length));
+					return;
+				}
+			}
+			String s = (String) type.getValue();
+			OtpDeviceType t = s == null? null: OtpDeviceType.fromString(s);
 			currentDevice = new OtpDevice();
-			currentDevice.setType(OtpDeviceType.fromString(type.getValue().toString()));
+			currentDevice.setType(t);
+			currentDevice.setPin((Password) pin.getValue());
 			currentDevice.setEmail((String) email.getValue());
 			currentDevice.setPhone((String) phone.getValue());
 			currentDevice.setCreated(new Date());
