@@ -25,7 +25,8 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
 			throw new InternalErrorException("TOTP is disabled by system administrator");
 
 		final HmacOneTimePasswordGenerator totp =
-                new HmacOneTimePasswordGenerator(cfg.getTotpDigits(), cfg.getTotpAlgorithm());
+				new HmacOneTimePasswordGenerator(entity.getDigits() == null ? 6: entity.getDigits().intValue(), 
+        		entity.getAlgorithm() == null ? "HmacSHA1": entity.getAlgorithm());
 
 		byte buffer[] =  new Base32().decode(entity.getAuthKey());
         final Key key = new SecretKeySpec(buffer, "RAW");
@@ -66,6 +67,8 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
 		sr.nextBytes(b);
 		String s = new Base32().encodeAsString(b);
 		entity.setAuthKey(s);
+		entity.setAlgorithm( cfg.getTotpAlgorithm());
+		entity.setDigits(cfg.getTotpDigits());
 		return b;
 	}
 

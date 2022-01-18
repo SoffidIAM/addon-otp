@@ -24,12 +24,13 @@ public class HotpValidationServiceImpl extends HotpValidationServiceBase {
 			throw new InternalErrorException("HOTP is disabled by system administrator");
 		
 		final HmacOneTimePasswordGenerator totp =
-                new HmacOneTimePasswordGenerator(cfg.getHotpDigits(), cfg.getHotpAlgorithm());
+				new HmacOneTimePasswordGenerator(entity.getDigits() == null ? 6: entity.getDigits().intValue(), 
+		        		entity.getAlgorithm() == null ? "HmacSHA1": entity.getAlgorithm());
 
 		byte buffer[] =  new Base32().decode(entity.getAuthKey());
         final Key key = new SecretKeySpec(buffer, "RAW");
         
-        long lastUsed = entity.getLastUsedValue() == null? -1: entity.getLastUsedValue().longValue();
+        long lastUsed = entity.getLastUsedValue() == null? -5: entity.getLastUsedValue().longValue();
         
 		// 5 minutes offset allowed
 		int intValue = Integer.parseInt(pin);
@@ -62,6 +63,8 @@ public class HotpValidationServiceImpl extends HotpValidationServiceBase {
 		sr.nextBytes(b);
 		String s = new Base32().encodeAsString(b);
 		entity.setAuthKey(s);
+		entity.setAlgorithm( cfg.getHotpAlgorithm());
+		entity.setDigits(cfg.getHotpDigits());
 		return b;
 	}
 

@@ -108,9 +108,9 @@ public class OtpServiceImpl extends OtpServiceBase {
 				":"+entity.getName()+" "+ 
 				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8");
 		url += "?secret="+encodeKey(key);
-		url += "&issuer=Soffid";
-		url += "&algorithm=SHA1";
-		url += "&digits=6";
+		url += "&issuer="+ URLEncoder.encode(cfg.getTotpIssuer(), "UTF-8");
+		url += "&algorithm="+URLEncoder.encode(entity.getAlgorithm().substring(4), "UTF-8");
+		url += "&digits="+URLEncoder.encode(entity.getDigits().toString(), "UTF-8") ;
 		url += "&period=30";
 		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8");
 		
@@ -126,13 +126,13 @@ public class OtpServiceImpl extends OtpServiceBase {
 	private BufferedImage generateHotpQR(OtpDeviceEntity entity, byte[] key) throws Exception {
 		OtpConfig cfg = handleGetConfiguration();
 		String url = "otpauth://hotp/"+
-				URLEncoder.encode(cfg.getTotpIssuer(),"UTF-8")+
+				URLEncoder.encode(cfg.getHotpIssuer(),"UTF-8")+
 				":"+entity.getName()+" "+ 
 				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8");
 		url += "?secret="+encodeKey(key);
-		url += "&issuer=Soffid";
-		url += "&algorithm=SHA1";
-		url += "&digits=6";
+		url += "&issuer="+ URLEncoder.encode(cfg.getHotpIssuer(), "UTF-8");
+		url += "&algorithm="+URLEncoder.encode(entity.getAlgorithm().substring(4), "UTF-8");
+		url += "&digits="+URLEncoder.encode(entity.getDigits().toString(), "UTF-8") ;
 		url += "&counter=0";
 		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8");
 		

@@ -92,28 +92,12 @@ public class HmacOneTimePasswordGenerator {
     * @throws NoSuchAlgorithmException if the given algorithm is not supported by the underlying JRE
     */
    protected HmacOneTimePasswordGenerator(final int passwordLength, final String algorithm) throws NoSuchAlgorithmException {
-       switch (passwordLength) {
-           case 6: {
-               this.modDivisor = 1000000;
-               break;
-           }
-
-           case 7: {
-               this.modDivisor = 10000000;
-               break;
-           }
-
-           case 8: {
-               this.modDivisor = 100000000;
-               break;
-           }
-
-           default: {
-               throw new IllegalArgumentException("Password length must be between 6 and 8 digits.");
-           }
-       }
-
-       this.passwordLength = passwordLength;
+	   int n = 1;
+	   for (int i = 0; i < passwordLength; i++)
+		   n *= 10;
+	   
+	   modDivisor = n;
+	   this.passwordLength = passwordLength;
 
        // Our purpose here is just to throw an exception immediately if the algorithm is bogus.
        Mac.getInstance(algorithm);

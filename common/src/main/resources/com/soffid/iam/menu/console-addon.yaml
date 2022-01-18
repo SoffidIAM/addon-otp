@@ -1,5 +1,5 @@
 - name: otp.menu
-  url: addon/otp/otp.zul
+  url: /addon/otp/otp.zul
   img: /addon/otp/menu/otp.svg
   permissions: ["otp:user"]
   position: 5
@@ -10,6 +10,6 @@
     - name: seu.security
       options:
       - name: otp.configmenu
-        url: addon/otp/otp-config.zul
+        url: /addon/otp/otp-config.zul
         img: /addon/otp/menu/otp-config.svg
         permissions: ["otp:manage"]

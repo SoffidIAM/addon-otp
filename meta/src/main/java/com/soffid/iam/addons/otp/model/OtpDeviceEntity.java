@@ -82,6 +82,18 @@ public abstract class OtpDeviceEntity {
 	@Nullable
 	String pin;
 
+	@Description("Number of digits otp")
+	@Column (name="OTP_DIGITS")
+	@Nullable
+	Integer digits;
+
+
+	@Description("OTP ALgorithm")
+	@Column (name="OTP_ALGORI")
+	@Nullable
+	String algorithm;
+
+
 
 	@DaoFinder("select sce\n"
 			+ "from com.soffid.iam.addons.otp.model.OtpDeviceEntity as sce\n"
