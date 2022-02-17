@@ -3,7 +3,9 @@ package com.soffid.iam.addons.otp.service;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base32;
@@ -17,8 +19,16 @@ import com.soffid.iam.addons.otp.common.OtpDevice;
 import com.soffid.iam.addons.otp.common.OtpDeviceType;
 import com.soffid.iam.addons.otp.common.OtpStatus;
 import com.soffid.iam.addons.otp.model.OtpDeviceEntity;
+import com.soffid.iam.addons.otp.model.OtpDeviceEntityDao;
+import com.soffid.iam.api.AsyncList;
+import com.soffid.iam.api.Challenge;
 import com.soffid.iam.api.Configuration;
+import com.soffid.iam.api.PagedResult;
+import com.soffid.iam.api.Password;
+import com.soffid.iam.bpm.service.scim.ScimHelper;
 import com.soffid.iam.model.ConfigEntity;
+import com.soffid.iam.model.criteria.CriteriaSearchConfiguration;
+import com.soffid.iam.utils.AutoritzacionsUsuari;
 import com.soffid.iam.utils.ConfigurationCache;
 import com.soffid.iam.utils.Security;
 
@@ -316,6 +326,98 @@ public class OtpServiceImpl extends OtpServiceBase {
 			getOtpDeviceEntityDao().remove(entity);
 		}
 		
+	}
+
+	@Override
+	protected AsyncList<OtpDevice> handleFindOtpDevicesByJsonQueryAsync(String text, String query) throws Exception {
+		final AsyncList<OtpDevice> result = new AsyncList<OtpDevice>();
+		getAsyncRunnerService().run(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					doFindOtpDevicesByJsonQuery(text, query, null, null, result);
+				} catch (Throwable e) {
+					throw new RuntimeException(e);
+				}				
+			}
+		}, result);
+
+		return result;
+	}
+
+	@Override
+	protected PagedResult<OtpDevice> handleFindOtpDevicesByJsonQuery(String text, String query, Integer firstResult ,
+			Integer pageSize) throws Exception {
+		final LinkedList<OtpDevice> result = new LinkedList<OtpDevice>();
+		return doFindOtpDevicesByJsonQuery(text, query, firstResult, pageSize, result);
+	}
+
+	protected PagedResult<OtpDevice> doFindOtpDevicesByJsonQuery(String text, String query, Integer firstResult ,
+			Integer pageSize, List<OtpDevice> result) throws Exception {
+		ScimHelper h = new ScimHelper(OtpDevice.class);
+		h.setPrimaryAttributes(new String[] { "user", "name"});
+		CriteriaSearchConfiguration config = new CriteriaSearchConfiguration();
+		config.setFirstResult(firstResult);
+		config.setMaximumResultSize(pageSize);
+		h.setConfig(config);
+		h.setTenantFilter("tenant.id");
+		
+		OtpDeviceEntityDao dao = getOtpDeviceEntityDao();
+
+		h.setGenerator((entity) -> {
+			OtpDeviceEntity ne = (OtpDeviceEntity) entity;
+				return dao.toOtpDevice((OtpDeviceEntity) entity);
+		}); 
+		h.search(text, query, (Collection) result ); 
+		PagedResult<OtpDevice> pr = new PagedResult<>();
+		pr.setStartIndex(firstResult == null ? 0: firstResult);
+		pr.setItemsPerPage(pageSize);
+		pr.setTotalResults(h.count());
+		pr.setResources(result);
+		return pr;
+	}
+
+	@Override
+	protected boolean handleValidateChalleng(OtpDevice device, String pin) throws Exception {
+		OtpDeviceEntity entity = getOtpDeviceEntityDao().load(device.getId());
+		boolean valid = false;
+		if (entity.getType() == OtpDeviceType.EMAIL) {
+			valid = getEmailValidationService().validatePin(entity, handleGetConfiguration(), pin);
+		}
+		if (entity.getType() == OtpDeviceType.SMS) {
+			valid = getSmsValidationService().validatePin(entity, handleGetConfiguration(), pin);
+		}
+		if (entity.getType() == OtpDeviceType.HOTP) {
+			valid = getHotpValidationService().validatePin(entity, handleGetConfiguration(), pin);
+		}
+		if (entity.getType() == OtpDeviceType.TOTP) {
+			valid = getTotpValidationService().validatePin(entity, handleGetConfiguration(), pin);
+		}
+		if (entity.getType() == OtpDeviceType.PIN) {
+			valid = getPinValidationService().validatePin(entity, handleGetConfiguration(), pin);
+		}
+		return valid;
+	}
+
+	@Override
+	protected Challenge handleGenerateChallenge(OtpDevice device) throws Exception {
+		OtpDeviceEntity entity = getOtpDeviceEntityDao().load(device.getId());
+		final OtpConfig cfg = handleGetConfiguration();
+		Challenge challenge = new Challenge();
+		challenge.setCardNumber(entity.getName());
+		challenge.setCell("PIN");
+		if (device.getType() == OtpDeviceType.EMAIL) {
+			getEmailValidationService().sendPin(entity, cfg);
+		}
+		if (device.getType() == OtpDeviceType.SMS) {
+			getSmsValidationService().sendPin(entity, cfg);
+		}
+		if (device.getType() == OtpDeviceType.PIN) {
+			String pattern = getPinValidationService().selectDigits(entity, cfg);
+			if (pattern != null)
+				challenge.setCell("digits "+pattern);
+		}
+		return challenge;
 	}
 }
 

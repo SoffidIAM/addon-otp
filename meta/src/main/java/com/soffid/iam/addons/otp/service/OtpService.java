@@ -21,10 +21,15 @@ import com.soffid.iam.addons.otp.service.impl.HotpValidationService;
 import com.soffid.iam.addons.otp.service.impl.PinValidationService;
 import com.soffid.iam.addons.otp.service.impl.SmsValidationService;
 import com.soffid.iam.addons.otp.service.impl.TotpValidationService;
+import com.soffid.iam.api.AsyncList;
+import com.soffid.iam.api.PagedResult;
+import com.soffid.iam.service.AsyncRunnerService;
 import com.soffid.mda.annotation.Depends;
+import com.soffid.mda.annotation.Nullable;
 import com.soffid.mda.annotation.Operation;
 import com.soffid.mda.annotation.Service;
 
+import es.caib.seycon.ng.comu.Challenge;
 import es.caib.seycon.ng.model.ConfiguracioEntity;
 import es.caib.seycon.ng.model.MaquinaEntity;
 import es.caib.seycon.ng.servei.ConfiguracioService;
@@ -42,7 +47,8 @@ import es.caib.seycon.ng.servei.XarxaService;
 	PinValidationService.class,
 	es.caib.seycon.ng.model.UsuariEntity.class,
 	ConfiguracioService.class,
-	ConfiguracioEntity.class})
+	ConfiguracioEntity.class, 
+	AsyncRunnerService.class})
 public abstract class OtpService {
 	@Operation ( grantees={otp_manage.class})
 	@Transactional(rollbackFor={java.lang.Exception.class})
@@ -65,6 +71,18 @@ public abstract class OtpService {
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	}
 
+	@Operation ( grantees={otp_manage.class, otp_unlock.class, otp_cancel.class})
+	public Challenge generateChallenge(OtpDevice device)
+		throws es.caib.seycon.ng.exception.InternalErrorException {
+		return null;
+	}
+
+	@Operation ( grantees={otp_manage.class, otp_unlock.class, otp_cancel.class})
+	public boolean validateChalleng(OtpDevice device, String pin)
+		throws es.caib.seycon.ng.exception.InternalErrorException {
+		return false;
+	}
+
 	@Operation ( grantees={otp_manage.class})
 	public void deleteDevice(OtpDevice device)
 		throws es.caib.seycon.ng.exception.InternalErrorException {
@@ -82,4 +100,10 @@ public abstract class OtpService {
 		throws es.caib.seycon.ng.exception.InternalErrorException {
 	 return null;
 	}
+	
+	@Operation ( grantees={otp_manage.class})
+	public AsyncList<OtpDevice> findOtpDevicesByJsonQueryAsync (@Nullable String text, @Nullable String query) { return null;}
+
+	@Operation ( grantees={otp_manage.class})
+	public PagedResult<OtpDevice> findOtpDevicesByJsonQuery (@Nullable String text,@Nullable String query, @Nullable Integer firstResult, @Nullable Integer pageSize) {return null;}
 }
