@@ -111,6 +111,82 @@ public class OtpServiceImpl extends OtpServiceBase {
 		return device;
 	}
 
+	public static byte[] hexStringToByteArray(String s) {
+	    int len = s.length();
+	    byte[] data = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+	                             + Character.digit(s.charAt(i+1), 16));
+	    }
+	    return data;
+	}
+
+	@Override
+	protected OtpDevice handleImportDevice(String user, OtpDevice device, String secret) throws Exception {
+		OtpDeviceEntity entity = getOtpDeviceEntityDao().newOtpDeviceEntity();
+		entity.setCreated(new Date());
+		entity.setUser(getUserEntityDao().findByUserName(user));
+		if (entity.getUser() == null)
+			throw new InternalErrorException("Wrong user "+user);
+		entity.setFails(0);
+		entity.setStatus(OtpStatus.VALIDATED);
+		entity.setType(device.getType());
+		entity.setName(device.getName());
+		if (device.getStatus() != OtpStatus.VALIDATED)
+			entity.setStatus(OtpStatus.CREATED);
+		else
+			entity.setStatus(OtpStatus.VALIDATED);
+		entity.setCreated(new Date());
+		if (device.getType() == OtpDeviceType.EMAIL) {
+			if (device.getEmail() == null || device.getEmail().trim().isEmpty())
+				throw new InternalErrorException("Email address cannot be empty");
+			char[] ach = device.getEmail().toCharArray();
+			int step = 0;
+			for (int i = 0; i < ach.length; i++)
+			{
+				if (ach[i] == '.' || ach[i] == '@') step = 0;
+				else if (step ++ >= 2) ach[i] = '*';
+			}
+			entity.setEmail(device.getEmail());
+			entity.setName("Email message to "+new String(ach));
+		}
+		if (device.getType() == OtpDeviceType.SMS) {
+			if (device.getPhone() == null || device.getPhone().trim().isEmpty())
+				throw new InternalErrorException("Phone number cannot be empty");
+			char[] ach = device.getPhone().toCharArray();
+			int step = 0;
+			for (int i = 2; i < ach.length - 2; i++)
+			{
+				ach[i] = '*';
+			}
+			entity.setPhone(device.getPhone());
+			entity.setName("SMS message to "+new String(ach));
+		}
+		if (device.getType() == OtpDeviceType.TOTP) {
+			String last = getTokenId("TOTP");
+			OtpConfig cfg = handleGetConfiguration();
+			entity.setAuthKey(new Base32().encodeAsString(hexStringToByteArray(secret)));
+			entity.setAlgorithm( cfg.getTotpAlgorithm());
+			entity.setDigits(cfg.getTotpDigits());
+		}
+		if (device.getType() == OtpDeviceType.HOTP) {
+			String last = getTokenId("HOTP");
+			OtpConfig cfg = handleGetConfiguration();
+			entity.setAuthKey(new Base32().encodeAsString(hexStringToByteArray(secret)));
+			entity.setAlgorithm( cfg.getHotpAlgorithm());
+			entity.setDigits(cfg.getHotpDigits());
+		}
+		if (device.getType() == OtpDeviceType.PIN) {
+			OtpConfig cfg = handleGetConfiguration();
+			if (device.getPin().getPassword().length() < cfg.getPinLength())
+				throw new InternalErrorException(String.format("The security number must contain at least %d numbers", cfg.getPinLength()));
+			entity.setName("Security number");
+			entity.setPin(device.getPin().toString());
+		}
+		getOtpDeviceEntityDao().create(entity);
+		return device;
+	}
+
 	private BufferedImage generateTotpQR(OtpDeviceEntity entity, byte[] key) throws Exception {
 		OtpConfig cfg = handleGetConfiguration();
 		String url = "otpauth://totp/"+

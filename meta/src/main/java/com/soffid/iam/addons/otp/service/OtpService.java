@@ -54,6 +54,10 @@ public abstract class OtpService {
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public OtpDevice registerDevice(String user, OtpDevice device) { return null;}
 
+	@Operation ( grantees={otp_manage.class})
+	@Transactional(rollbackFor={java.lang.Exception.class})
+	public OtpDevice importDevice(String user, OtpDevice device, @Nullable String secret) { return null;}
+
 	@Operation ( grantees={otp_cancel.class})
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public void cancelDevice(OtpDevice device) { return ;}
