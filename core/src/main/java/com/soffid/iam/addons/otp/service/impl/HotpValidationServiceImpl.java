@@ -33,7 +33,12 @@ public class HotpValidationServiceImpl extends HotpValidationServiceBase {
         long lastUsed = entity.getLastUsedValue() == null? -5: entity.getLastUsedValue().longValue();
         
 		// 5 minutes offset allowed
-		int intValue = Integer.parseInt(pin);
+		int intValue;
+		try {
+			intValue = Integer.parseInt(pin);
+		} catch (NumberFormatException e) {
+			return false;
+		}
 		
 		for (long i = lastUsed + 1 ; i < lastUsed + 25; i++)
 		{

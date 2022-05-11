@@ -36,7 +36,12 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
         long lastUsed = entity.getLastUsedValue() == null? 0: entity.getLastUsedValue().longValue();
         
 		// 5 minutes offset allowed
-		int intValue = Integer.parseInt(pin);
+		int intValue;
+		try {
+			intValue = Integer.parseInt(pin);
+		} catch (NumberFormatException e) {
+			return false;
+		}
 		long seq = System.currentTimeMillis() / 30000L;
 		
 		for (long i = seq - 10; i < seq + 10; i++)
