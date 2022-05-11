@@ -1,8 +1,11 @@
-- name: otp.menu
-  url: /addon/otp/otp.zul
-  img: /addon/otp/menu/otp.svg
-  permissions: ["otp:user"]
+- name: menu.multifactor
+  img: /img/menu/authentication.svg
   position: 5
+  options:
+  - name: otp.menu
+    url: /addon/otp/otp.zul
+    img: /addon/otp/menu/otp.svg
+    permissions: ["otp:user"]
 - name: soffid.admin
   options:
   - name: seu.configuration
