@@ -24,40 +24,6 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<filteringDeploymentDescriptors>
-						true
-					</filteringDeploymentDescriptors>
-					<webResources>
-						<resource>
-							<directory>
-								${pom.basedir}/src/main/webapp/
-							</directory>
-							<filtering>true</filtering>
-							<includes>
-								<include>WEB-INF/**</include>
-							</includes>
-						</resource>
-						<resource>
-							<directory>
-								${pom.basedir}/src/main/resources
-							</directory>
-							<filtering>true</filtering>
-							<includes>
-								<include>WEB-INF/*</include>
-							</includes>
-						</resource>
-					</webResources>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.8</source>
