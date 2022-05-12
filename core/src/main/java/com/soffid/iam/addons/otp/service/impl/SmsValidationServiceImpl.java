@@ -130,7 +130,7 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 				b.append(smsBody.substring(pos));
 				break;
 			} else {
-				int last = smsBody.indexOf("}", pos);
+				int last = smsBody.indexOf("}", next);
 				if (last < 0) {
 					b.append(smsBody.substring(pos));
 					break;
