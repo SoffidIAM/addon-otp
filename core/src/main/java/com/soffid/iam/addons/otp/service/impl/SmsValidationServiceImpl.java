@@ -71,7 +71,7 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 		}
 		SecureRandom sr = new SecureRandom();
 		String pin = "";
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < cfg.getSmsDigits(); i++) {
 			pin += (char) ('0'+sr.nextInt(10));
 		}
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
