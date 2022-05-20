@@ -10,7 +10,7 @@
 	<artifactId>otp</artifactId>
 	<packaging>pom</packaging>
 	<name>One Time Password token support</name>
-	<version>2.2.3-SNAPSHOT</version>
+	<version>2.2.4-SNAPSHOT</version>
 	<description>SOFFID IAM OTP addon</description>
 	<prerequisites>
 		<maven>2.0.1</maven>
