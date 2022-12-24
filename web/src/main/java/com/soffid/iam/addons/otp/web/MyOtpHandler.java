@@ -6,8 +6,12 @@ import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.zkoss.util.resource.Labels;
+import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.UiException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Image;
 import org.zkoss.zul.Window;
@@ -156,6 +160,54 @@ public class MyOtpHandler extends FrameHandler {
 				w.setVisible(false);
 			} else {
 				cf.setWarning(null, "Wrong PIN");
+			}
+		}
+	}
+
+	@Override
+	public void afterCompose() {
+		super.afterCompose();
+		HttpServletRequest req = (HttpServletRequest) Executions.getCurrent().getNativeRequest();
+		String wizard = req.getParameter("wizard");
+		if (wizard != null) {
+			Component w = getFellow("add-window");			
+			try {
+				if ("totp".equals(wizard)) {
+					addNew();
+					CustomField3 type = (CustomField3) w.getFellow("type");
+					type.setValue(OtpDeviceType.TOTP.getValue());
+					changeDeviceType(null);
+					addStep2(null);
+				}
+				if ("hotp".equals(wizard)) {
+					addNew();
+					CustomField3 type = (CustomField3) w.getFellow("type");
+					type.setValue(OtpDeviceType.HOTP.getValue());
+					changeDeviceType(null);
+					addStep2(null);
+				}
+				if ("email".equals(wizard)) {
+					addNew();
+					CustomField3 type = (CustomField3) w.getFellow("type");
+					type.setValue(OtpDeviceType.EMAIL.getValue());
+					changeDeviceType(null);
+				}
+				if ("sms".equals(wizard)) {
+					addNew();
+					CustomField3 type = (CustomField3) w.getFellow("type");
+					type.setValue(OtpDeviceType.SMS.getValue());
+					changeDeviceType(null);
+					addStep2(null);
+				}
+				if ("pin".equals(wizard)) {
+					addNew();
+					CustomField3 type = (CustomField3) w.getFellow("type");
+					type.setValue(OtpDeviceType.PIN.getValue());
+					changeDeviceType(null);
+					addStep2(null);
+				}
+			} catch (Exception e) {
+				throw new UiException(e);
 			}
 		}
 	}
