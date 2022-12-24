@@ -3,6 +3,7 @@ package com.soffid.iam.addons.otp.service;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -279,12 +280,12 @@ public class OtpServiceImpl extends OtpServiceBase {
 		String s = null;
 
 		configuration.setAllowEmail( "true".equals(getConfigDefault("otp.email.allow", "false")));
-		configuration.setEmailBody( getConfigDefault("otp.email.body", "Your authentication code is ${PIN}"));
+		configuration.setEmailBody( getBlobConfigDefault("otp.email.body", "Your authentication code is ${PIN}"));
 		configuration.setEmailSubject( getConfigDefault("otp.email.subject", "Authentication code"));
 		configuration.setEmailDigits(Integer.decode( getConfigDefault("otp.email.digits", "6")));
 		
 		configuration.setAllowSms("true".equals(getConfigDefault("otp.sms.allow", "false")));
-		configuration.setSmsBody( getConfigDefault("otp.sms.body", ""));
+		configuration.setSmsBody( getBlobConfigDefault("otp.sms.body", ""));
 		configuration.setSmsHeaders( getConfigDefault("otp.sms.headers", ""));
 		configuration.setSmsMethod( getConfigDefault("otp.sms.method", "GET"));
 		configuration.setSmsResponseToCheck( getConfigDefault("otp.sms.check", ""));
@@ -316,15 +317,25 @@ public class OtpServiceImpl extends OtpServiceBase {
 		return v != null ? v: def;
 	}
 
+	protected String getBlobConfigDefault(String p, String def) throws InternalErrorException {
+		String v = null;
+		final byte[] blob = getConfigurationService().getBlob(p);
+		if (blob == null)
+			v = ConfigurationCache.getProperty(p);
+		else
+			v = new String(blob, StandardCharsets.UTF_8);
+		return v != null ? v: def;
+	}
+
 	@Override
 	protected void handleUpdate(OtpConfig config) throws Exception {
 		updateConfig("otp.email.allow", Boolean.toString(config.isAllowEmail()));
-		updateConfig("otp.email.body", config.getEmailBody());
+		updateBlobConfig("otp.email.body", config.getEmailBody());
 		updateConfig("otp.email.subject", config.getEmailSubject());
 		updateConfig("otp.email.digits", config.getEmailDigits());
 		
 		updateConfig("otp.sms.allow", Boolean.toString(config.isAllowSms()));
-		updateConfig("otp.sms.body", config.getSmsBody());
+		updateBlobConfig("otp.sms.body", config.getSmsBody());
 		updateConfig("otp.sms.headers", config.getSmsHeaders());
 		updateConfig("otp.sms.method", config.getSmsMethod());
 		updateConfig("otp.sms.check", config.getSmsResponseToCheck());
@@ -365,6 +376,18 @@ public class OtpServiceImpl extends OtpServiceBase {
 			}
 		}
 	}
+
+	protected void updateBlobConfig(String p, Object v) throws InternalErrorException {
+		Configuration cfg = getConfigurationService().findParameterByNameAndNetworkName(p, null);
+		if (cfg != null) {
+			getConfigurationService().delete(cfg);
+		}
+		if (v == null || v.toString().trim().isEmpty())
+			getConfigurationService().deleteBlob(p);
+		else
+			getConfigurationService().updateBlob(p, v.toString().getBytes(StandardCharsets.UTF_8));
+	}
+
 
 	@Override
 	protected void handleUpdateDevice(OtpDevice device) throws Exception {

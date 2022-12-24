@@ -82,7 +82,8 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 		getOtpDeviceEntityDao().update(device);
 
 		String smsUrl = cfg.getSmsUrl();
-		WebClient request = WebClient.create(translate(smsUrl, device, pin));
+		final String url = translate(smsUrl, device, pin);
+		WebClient request = WebClient.create(url);
 		
 		String smsHeaders = cfg.getSmsHeaders();
 		if (smsHeaders != null) {
@@ -100,8 +101,8 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 		}
 		log.info("Sending message to "+device.getUser().getUserName());
 		String smsMethod = cfg.getSmsMethod();
-		String smsBody = cfg.getSmsBody();
-		Response response = request.invoke(smsMethod, translate(smsBody, device, pin));
+		String smsBody = translate(cfg.getSmsBody(), device, pin);
+		Response response = request.invoke(smsMethod, smsBody);
 
 		if ( response.getStatus() != HttpStatus.SC_OK)
 			throw new InternalError ("Error sending SMS message: HTTP/"+response.getStatus());
@@ -110,11 +111,14 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 		int read;
 		while ((read = in.read()) >= 0)
 			out.write(read);
-		log.info("SMS gateway response: "+out.toString("UTF-8"));
 		String smsResponseCheck = cfg.getSmsResponseToCheck();
 		if (smsResponseCheck != null) {
 			if (!out.toString("UTF-8").contains(smsResponseCheck)) {
-				log.info("Error sending SMS: "+out.toString("UTF-8"));
+				log.info("Error sending SMS:\n"+
+						cfg.getSmsMethod()+" "+url+"\n"+
+						smsHeaders + "\n\n" +
+						smsBody);
+				log.info("SMS gateway response:\n"+out.toString("UTF-8"));
 				throw new InternalErrorException("Cannot send SMS message");
 			}
 		}

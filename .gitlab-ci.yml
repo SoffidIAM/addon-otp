@@ -100,7 +100,7 @@ release:
     - > 
       (
       echo '{"tag_name": "'$CI_COMMIT_TAG'", ' ;
-      echo '"name": "Release '$CI_COMMIT_TAG'"' ;
+      echo '"name": "Release '$CI_COMMIT_TAG'", ' ;
       echo '"assets":{"links": [';
       first="true" ;
       mvn -q -Dexec.executable='echo' -Dexec.args='${project.groupId} ${project.version} ${project.artifactId} ${project.packaging}' exec:exec | 
