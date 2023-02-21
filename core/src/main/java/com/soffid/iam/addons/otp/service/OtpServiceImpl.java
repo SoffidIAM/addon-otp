@@ -53,7 +53,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		entity.setCreated(new Date());
 		entity.setUser(getUserEntityDao().findByUserName(user));
 		if (entity.getUser() == null)
-			throw new InternalErrorException("Wrong user "+user);
+			throw new InternalErrorException(Messages.getString("OtpServiceImpl.0")+user); //$NON-NLS-1$
 		entity.setFails(0);
 		entity.setStatus(OtpStatus.VALIDATED);
 		entity.setType(device.getType());
@@ -64,7 +64,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		entity.setCreated(new Date());
 		if (device.getType() == OtpDeviceType.EMAIL) {
 			if (device.getEmail() == null || device.getEmail().trim().isEmpty())
-				throw new InternalErrorException("Email address cannot be empty");
+				throw new InternalErrorException(Messages.getString("OtpServiceImpl.1")); //$NON-NLS-1$
 			char[] ach = device.getEmail().toCharArray();
 			int step = 0;
 			for (int i = 0; i < ach.length; i++)
@@ -73,11 +73,11 @@ public class OtpServiceImpl extends OtpServiceBase {
 				else if (step ++ >= 2) ach[i] = '*';
 			}
 			entity.setEmail(device.getEmail());
-			entity.setName("Email message to "+new String(ach));
+			entity.setName(Messages.getString("OtpServiceImpl.11")+new String(ach)); //$NON-NLS-1$
 		}
 		if (device.getType() == OtpDeviceType.SMS) {
 			if (device.getPhone() == null || device.getPhone().trim().isEmpty())
-				throw new InternalErrorException("Phone number cannot be empty");
+				throw new InternalErrorException(Messages.getString("OtpServiceImpl.12")); //$NON-NLS-1$
 			char[] ach = device.getPhone().toCharArray();
 			int step = 0;
 			for (int i = 2; i < ach.length - 2; i++)
@@ -85,16 +85,16 @@ public class OtpServiceImpl extends OtpServiceBase {
 				ach[i] = '*';
 			}
 			entity.setPhone(device.getPhone());
-			entity.setName("SMS message to "+new String(ach));
+			entity.setName(Messages.getString("OtpServiceImpl.4")+new String(ach)); //$NON-NLS-1$
 		}
 		if (device.getType() == OtpDeviceType.TOTP) {
-			String last = getTokenId("TOTP");
+			String last = getTokenId("TOTP"); //$NON-NLS-1$
 			entity.setName(last);
 			byte[] key = getTotpValidationService().generateKey(entity, handleGetConfiguration() );
 			image = generateTotpQR(entity, key);
 		}
 		if (device.getType() == OtpDeviceType.HOTP) {
-			String last = getTokenId("HOTP");
+			String last = getTokenId("HOTP"); //$NON-NLS-1$
 			entity.setName(last);
 			byte[] key = getHotpValidationService().generateKey(entity, handleGetConfiguration());
 			image = generateHotpQR(entity, key);
@@ -102,8 +102,8 @@ public class OtpServiceImpl extends OtpServiceBase {
 		if (device.getType() == OtpDeviceType.PIN) {
 			OtpConfig cfg = handleGetConfiguration();
 			if (device.getPin().getPassword().length() < cfg.getPinLength())
-				throw new InternalErrorException(String.format("The security number must contain at least %d numbers", cfg.getPinLength()));
-			entity.setName("Security number");
+				throw new InternalErrorException(String.format(Messages.getString("OtpServiceImpl.16"), cfg.getPinLength())); //$NON-NLS-1$
+			entity.setName(Messages.getString("OtpServiceImpl.17")); //$NON-NLS-1$
 			entity.setPin(device.getPin().toString());
 		}
 		getOtpDeviceEntityDao().create(entity);
@@ -128,7 +128,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		entity.setCreated(new Date());
 		entity.setUser(getUserEntityDao().findByUserName(user));
 		if (entity.getUser() == null)
-			throw new InternalErrorException("Wrong user "+user);
+			throw new InternalErrorException(Messages.getString("OtpServiceImpl.0")+user); //$NON-NLS-1$
 		entity.setFails(0);
 		entity.setStatus(OtpStatus.VALIDATED);
 		entity.setType(device.getType());
@@ -140,7 +140,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		entity.setCreated(new Date());
 		if (device.getType() == OtpDeviceType.EMAIL) {
 			if (device.getEmail() == null || device.getEmail().trim().isEmpty())
-				throw new InternalErrorException("Email address cannot be empty");
+				throw new InternalErrorException(Messages.getString("OtpServiceImpl.1")); //$NON-NLS-1$
 			char[] ach = device.getEmail().toCharArray();
 			int step = 0;
 			for (int i = 0; i < ach.length; i++)
@@ -149,11 +149,11 @@ public class OtpServiceImpl extends OtpServiceBase {
 				else if (step ++ >= 2) ach[i] = '*';
 			}
 			entity.setEmail(device.getEmail());
-			entity.setName("Email message to "+new String(ach));
+			entity.setName(Messages.getString("OtpServiceImpl.11")+new String(ach)); //$NON-NLS-1$
 		}
 		if (device.getType() == OtpDeviceType.SMS) {
 			if (device.getPhone() == null || device.getPhone().trim().isEmpty())
-				throw new InternalErrorException("Phone number cannot be empty");
+				throw new InternalErrorException(Messages.getString("OtpServiceImpl.12")); //$NON-NLS-1$
 			char[] ach = device.getPhone().toCharArray();
 			int step = 0;
 			for (int i = 2; i < ach.length - 2; i++)
@@ -161,17 +161,17 @@ public class OtpServiceImpl extends OtpServiceBase {
 				ach[i] = '*';
 			}
 			entity.setPhone(device.getPhone());
-			entity.setName("SMS message to "+new String(ach));
+			entity.setName(Messages.getString("OtpServiceImpl.13")+new String(ach)); //$NON-NLS-1$
 		}
 		if (device.getType() == OtpDeviceType.TOTP) {
-			String last = getTokenId("TOTP");
+			String last = getTokenId("TOTP"); //$NON-NLS-1$
 			OtpConfig cfg = handleGetConfiguration();
 			entity.setAuthKey(new Base32().encodeAsString(hexStringToByteArray(secret)));
 			entity.setAlgorithm( cfg.getTotpAlgorithm());
 			entity.setDigits(cfg.getTotpDigits());
 		}
 		if (device.getType() == OtpDeviceType.HOTP) {
-			String last = getTokenId("HOTP");
+			String last = getTokenId("HOTP"); //$NON-NLS-1$
 			OtpConfig cfg = handleGetConfiguration();
 			entity.setAuthKey(new Base32().encodeAsString(hexStringToByteArray(secret)));
 			entity.setAlgorithm( cfg.getHotpAlgorithm());
@@ -180,8 +180,8 @@ public class OtpServiceImpl extends OtpServiceBase {
 		if (device.getType() == OtpDeviceType.PIN) {
 			OtpConfig cfg = handleGetConfiguration();
 			if (device.getPin().getPassword().length() < cfg.getPinLength())
-				throw new InternalErrorException(String.format("The security number must contain at least %d numbers", cfg.getPinLength()));
-			entity.setName("Security number");
+				throw new InternalErrorException(String.format(Messages.getString("OtpServiceImpl.16"), cfg.getPinLength())); //$NON-NLS-1$
+			entity.setName(Messages.getString("OtpServiceImpl.17")); //$NON-NLS-1$
 			entity.setPin(device.getPin().toString());
 		}
 		getOtpDeviceEntityDao().create(entity);
@@ -190,16 +190,16 @@ public class OtpServiceImpl extends OtpServiceBase {
 
 	private BufferedImage generateTotpQR(OtpDeviceEntity entity, byte[] key) throws Exception {
 		OtpConfig cfg = handleGetConfiguration();
-		String url = "otpauth://totp/"+
-				URLEncoder.encode(cfg.getTotpIssuer(),"UTF-8")+
-				":"+entity.getName()+" "+ 
-				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8");
-		url += "?secret="+encodeKey(key);
-		url += "&issuer="+ URLEncoder.encode(cfg.getTotpIssuer(), "UTF-8");
-		url += "&algorithm="+URLEncoder.encode(entity.getAlgorithm().substring(4), "UTF-8");
-		url += "&digits="+URLEncoder.encode(entity.getDigits().toString(), "UTF-8") ;
-		url += "&period=30";
-		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8");
+		String url = "otpauth://totp/"+ //$NON-NLS-1$
+				URLEncoder.encode(cfg.getTotpIssuer(),"UTF-8")+ //$NON-NLS-1$
+				":"+entity.getName()+" "+  //$NON-NLS-1$ //$NON-NLS-2$
+				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8"); //$NON-NLS-1$
+		url += "?secret="+encodeKey(key); //$NON-NLS-1$
+		url += "&issuer="+ URLEncoder.encode(cfg.getTotpIssuer(), "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+		url += "&algorithm="+URLEncoder.encode(entity.getAlgorithm().substring(4), "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+		url += "&digits="+URLEncoder.encode(entity.getDigits().toString(), "UTF-8") ; //$NON-NLS-1$ //$NON-NLS-2$
+		url += "&period=30"; //$NON-NLS-1$
+		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		
 		QRCodeWriter barcodeWriter = new QRCodeWriter();
 	    BitMatrix bitMatrix = 
@@ -212,16 +212,16 @@ public class OtpServiceImpl extends OtpServiceBase {
 
 	private BufferedImage generateHotpQR(OtpDeviceEntity entity, byte[] key) throws Exception {
 		OtpConfig cfg = handleGetConfiguration();
-		String url = "otpauth://hotp/"+
-				URLEncoder.encode(cfg.getHotpIssuer(),"UTF-8")+
-				":"+entity.getName()+" "+ 
-				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8");
-		url += "?secret="+encodeKey(key);
-		url += "&issuer="+ URLEncoder.encode(cfg.getHotpIssuer(), "UTF-8");
-		url += "&algorithm="+URLEncoder.encode(entity.getAlgorithm().substring(4), "UTF-8");
-		url += "&digits="+URLEncoder.encode(entity.getDigits().toString(), "UTF-8") ;
-		url += "&counter=0";
-		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8");
+		String url = "otpauth://hotp/"+ //$NON-NLS-1$
+				URLEncoder.encode(cfg.getHotpIssuer(),"UTF-8")+ //$NON-NLS-1$
+				":"+entity.getName()+" "+  //$NON-NLS-1$ //$NON-NLS-2$
+				URLEncoder.encode(entity.getUser().getFullName().replace(' ', '_'), "UTF-8"); //$NON-NLS-1$
+		url += "?secret="+encodeKey(key); //$NON-NLS-1$
+		url += "&issuer="+ URLEncoder.encode(cfg.getHotpIssuer(), "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+		url += "&algorithm="+URLEncoder.encode(entity.getAlgorithm().substring(4), "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+		url += "&digits="+URLEncoder.encode(entity.getDigits().toString(), "UTF-8") ; //$NON-NLS-1$ //$NON-NLS-2$
+		url += "&counter=0"; //$NON-NLS-1$
+		url += "&image="+URLEncoder.encode("https://www.soffid.com/favicon-150.png", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		
 		QRCodeWriter barcodeWriter = new QRCodeWriter();
 	    BitMatrix bitMatrix = 
@@ -234,23 +234,23 @@ public class OtpServiceImpl extends OtpServiceBase {
 
 	protected String encodeKey(byte[] key) throws UnsupportedEncodingException {
 		String s = new Base32().encodeAsString(key);
-		while (s.endsWith("="))
+		while (s.endsWith("=")) //$NON-NLS-1$
 			s = s.substring(0, s.length()-1);
 		return s;
 	}
 
 	protected String getTokenId(String prefix) {
-		ConfigEntity cfg = getConfigEntityDao().findByCodeAndNetworkCode("addon.otp.next-token", null);
+		ConfigEntity cfg = getConfigEntityDao().findByCodeAndNetworkCode("addon.otp.next-token", null); //$NON-NLS-1$
 		if (cfg == null)
 		{
 			cfg = getConfigEntityDao().newConfigEntity();
-			cfg.setDescription("Next OTP Token");
-			cfg.setName("addon.otp.next-token");
-			cfg.setValue("1");
+			cfg.setDescription(Messages.getString("OtpServiceImpl.52")); //$NON-NLS-1$
+			cfg.setName("addon.otp.next-token"); //$NON-NLS-1$
+			cfg.setValue("1"); //$NON-NLS-1$
 		}
 		String last = cfg.getValue();
 		String next = Integer.toString(Integer.parseInt(last)+1);
-		while (last.length() < 8) last = "0"+last;
+		while (last.length() < 8) last = "0"+last; //$NON-NLS-1$
 		cfg.setValue(next);
 		if (cfg.getId() == null)
 			getConfigEntityDao().create(cfg);
@@ -279,35 +279,35 @@ public class OtpServiceImpl extends OtpServiceBase {
 		OtpConfig configuration = new OtpConfig();
 		String s = null;
 
-		configuration.setAllowEmail( "true".equals(getConfigDefault("otp.email.allow", "false")));
-		configuration.setEmailBody( getBlobConfigDefault("otp.email.body", "Your authentication code is ${PIN}"));
-		configuration.setEmailSubject( getConfigDefault("otp.email.subject", "Authentication code"));
-		configuration.setEmailDigits(Integer.decode( getConfigDefault("otp.email.digits", "6")));
+		configuration.setAllowEmail( "true".equals(getConfigDefault("otp.email.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		configuration.setEmailBody( getBlobConfigDefault("otp.email.body", Messages.getString("OtpServiceImpl.60"))); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setEmailSubject( getConfigDefault("otp.email.subject", Messages.getString("OtpServiceImpl.62"))); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setEmailDigits(Integer.decode( getConfigDefault("otp.email.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		configuration.setAllowSms("true".equals(getConfigDefault("otp.sms.allow", "false")));
-		configuration.setSmsBody( getBlobConfigDefault("otp.sms.body", ""));
-		configuration.setSmsHeaders( getConfigDefault("otp.sms.headers", ""));
-		configuration.setSmsMethod( getConfigDefault("otp.sms.method", "GET"));
-		configuration.setSmsResponseToCheck( getConfigDefault("otp.sms.check", ""));
-		configuration.setSmsUrl( getConfigDefault("otp.sms.url", "https://www.ovh.com/cgi-bin/sms/http2sms.cgi?account=...&password=...&login=...&from=...&"
-				+ "to=${PHONE}&"
-				+ "message=Your authentication code is: ${PIN}&"
-				+ "noStop&contentType=application/json&class=0"));
-		configuration.setSmsDigits(Integer.decode( getConfigDefault("otp.sms.digits", "6")));
+		configuration.setAllowSms("true".equals(getConfigDefault("otp.sms.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		configuration.setSmsBody( getBlobConfigDefault("otp.sms.body", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setSmsHeaders( getConfigDefault("otp.sms.headers", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setSmsMethod( getConfigDefault("otp.sms.method", "GET")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setSmsResponseToCheck( getConfigDefault("otp.sms.check", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setSmsUrl( getConfigDefault("otp.sms.url", "https://www.ovh.com/cgi-bin/sms/http2sms.cgi?account=...&password=...&login=...&from=...&" //$NON-NLS-1$ //$NON-NLS-2$
+				+ "to=${PHONE}&" //$NON-NLS-1$
+				+ "message="+Messages.getString("OtpServiceImpl.14")+": ${PIN}&" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				+ "noStop&contentType=application/json&class=0")); //$NON-NLS-1$
+		configuration.setSmsDigits(Integer.decode( getConfigDefault("otp.sms.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
 
-		configuration.setAllowHotp("true".equals(getConfigDefault("otp.hotp.allow", "false")));
-		configuration.setHotpAlgorithm(getConfigDefault("otp.hotp.algorithm", "HmacSHA1"));
-		configuration.setHotpDigits(Integer.decode( getConfigDefault("otp.hotp.digits", "6")));
-		configuration.setHotpIssuer(getConfigDefault("otp.hotp.issuer", "Issuer"));
+		configuration.setAllowHotp("true".equals(getConfigDefault("otp.hotp.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		configuration.setHotpAlgorithm(getConfigDefault("otp.hotp.algorithm", "HmacSHA1")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setHotpDigits(Integer.decode( getConfigDefault("otp.hotp.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setHotpIssuer(getConfigDefault("otp.hotp.issuer", "Issuer")); //$NON-NLS-1$ //$NON-NLS-2$
 
-		configuration.setAllowTotp("true".equals(getConfigDefault("otp.totp.allow", "false")));
-		configuration.setTotpAlgorithm(getConfigDefault("otp.totp.algorithm", "HmacSHA1"));
-		configuration.setTotpDigits(Integer.decode( getConfigDefault("otp.totp.digits", "6")));
-		configuration.setTotpIssuer(getConfigDefault("otp.totp.issuer", "Issuer"));
+		configuration.setAllowTotp("true".equals(getConfigDefault("otp.totp.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		configuration.setTotpAlgorithm(getConfigDefault("otp.totp.algorithm", "HmacSHA1")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setTotpDigits(Integer.decode( getConfigDefault("otp.totp.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setTotpIssuer(getConfigDefault("otp.totp.issuer", "Issuer")); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		configuration.setAllowPin("true".equals(getConfigDefault("otp.pin.allow", "false")));
-		configuration.setPinDigits( Integer.parseInt( getConfigDefault("otp.pin.digits", "3")) );
-		configuration.setPinLength( Integer.parseInt( getConfigDefault("otp.pin.length", "8")));
+		configuration.setAllowPin("true".equals(getConfigDefault("otp.pin.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		configuration.setPinDigits( Integer.parseInt( getConfigDefault("otp.pin.digits", "3")) ); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setPinLength( Integer.parseInt( getConfigDefault("otp.pin.length", "8"))); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return configuration;
 	}
@@ -329,32 +329,32 @@ public class OtpServiceImpl extends OtpServiceBase {
 
 	@Override
 	protected void handleUpdate(OtpConfig config) throws Exception {
-		updateConfig("otp.email.allow", Boolean.toString(config.isAllowEmail()));
-		updateBlobConfig("otp.email.body", config.getEmailBody());
-		updateConfig("otp.email.subject", config.getEmailSubject());
-		updateConfig("otp.email.digits", config.getEmailDigits());
+		updateConfig("otp.email.allow", Boolean.toString(config.isAllowEmail())); //$NON-NLS-1$
+		updateBlobConfig("otp.email.body", config.getEmailBody()); //$NON-NLS-1$
+		updateConfig("otp.email.subject", config.getEmailSubject()); //$NON-NLS-1$
+		updateConfig("otp.email.digits", config.getEmailDigits()); //$NON-NLS-1$
 		
-		updateConfig("otp.sms.allow", Boolean.toString(config.isAllowSms()));
-		updateBlobConfig("otp.sms.body", config.getSmsBody());
-		updateConfig("otp.sms.headers", config.getSmsHeaders());
-		updateConfig("otp.sms.method", config.getSmsMethod());
-		updateConfig("otp.sms.check", config.getSmsResponseToCheck());
-		updateConfig("otp.sms.url", config.getSmsUrl());
-		updateConfig("otp.sms.digits", config.getSmsDigits());
+		updateConfig("otp.sms.allow", Boolean.toString(config.isAllowSms())); //$NON-NLS-1$
+		updateBlobConfig("otp.sms.body", config.getSmsBody()); //$NON-NLS-1$
+		updateConfig("otp.sms.headers", config.getSmsHeaders()); //$NON-NLS-1$
+		updateConfig("otp.sms.method", config.getSmsMethod()); //$NON-NLS-1$
+		updateConfig("otp.sms.check", config.getSmsResponseToCheck()); //$NON-NLS-1$
+		updateConfig("otp.sms.url", config.getSmsUrl()); //$NON-NLS-1$
+		updateConfig("otp.sms.digits", config.getSmsDigits()); //$NON-NLS-1$
 		
-		updateConfig("otp.hotp.allow", Boolean.toString(config.isAllowHotp()));
-		updateConfig("otp.hotp.algorithm", config.getHotpAlgorithm());
-		updateConfig("otp.hotp.digits", config.getHotpDigits());
-		updateConfig("otp.hotp.issuer", config.getHotpIssuer());
+		updateConfig("otp.hotp.allow", Boolean.toString(config.isAllowHotp())); //$NON-NLS-1$
+		updateConfig("otp.hotp.algorithm", config.getHotpAlgorithm()); //$NON-NLS-1$
+		updateConfig("otp.hotp.digits", config.getHotpDigits()); //$NON-NLS-1$
+		updateConfig("otp.hotp.issuer", config.getHotpIssuer()); //$NON-NLS-1$
 		
-		updateConfig("otp.totp.allow", Boolean.toString(config.isAllowTotp()));
-		updateConfig("otp.totp.algorithm", config.getTotpAlgorithm());
-		updateConfig("otp.totp.digits", config.getTotpDigits());
-		updateConfig("otp.totp.issuer", config.getTotpIssuer());
+		updateConfig("otp.totp.allow", Boolean.toString(config.isAllowTotp())); //$NON-NLS-1$
+		updateConfig("otp.totp.algorithm", config.getTotpAlgorithm()); //$NON-NLS-1$
+		updateConfig("otp.totp.digits", config.getTotpDigits()); //$NON-NLS-1$
+		updateConfig("otp.totp.issuer", config.getTotpIssuer()); //$NON-NLS-1$
 		
-		updateConfig("otp.pin.allow", config.isAllowPin());
-		updateConfig("otp.pin.digits", config.getPinDigits());
-		updateConfig("otp.pin.length", config.getPinLength());
+		updateConfig("otp.pin.allow", config.isAllowPin()); //$NON-NLS-1$
+		updateConfig("otp.pin.digits", config.getPinDigits()); //$NON-NLS-1$
+		updateConfig("otp.pin.length", config.getPinLength()); //$NON-NLS-1$
 		
 	}
 	
@@ -365,7 +365,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 			cfg = new Configuration();
 			cfg.setCode(p);
 			cfg.setValue(v.toString());
-			cfg.setDescription("Auto generated value");
+			cfg.setDescription(Messages.getString("OtpServiceImpl.130")); //$NON-NLS-1$
 			getConfigurationService().create(cfg);
 		} else if (cfg != null) {
 			if (v == null || v.toString().trim().isEmpty())
@@ -394,27 +394,27 @@ public class OtpServiceImpl extends OtpServiceBase {
 		OtpDeviceEntity entity = getOtpDeviceEntityDao().load(device.getId());
 		if (entity != null) {
 			if (device.getStatus() == OtpStatus.CREATED &&
-					Security.isUserInRole("otp:manage")) {
+					Security.isUserInRole("otp:manage")) { //$NON-NLS-1$
 				entity.setStatus(device.getStatus());
 				getOtpDeviceEntityDao().update(entity);
 			}
 			else if (device.getStatus() == OtpStatus.DISABLED &&
-					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:cancel")))  {
+					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:cancel")))  { //$NON-NLS-1$ //$NON-NLS-2$
 				entity.setStatus(device.getStatus());
 				getOtpDeviceEntityDao().update(entity);
 			}
 			else if (device.getStatus() == OtpStatus.VALIDATED &&
-					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:unlock")))  {
+					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:unlock")))  { //$NON-NLS-1$ //$NON-NLS-2$
 				entity.setStatus(device.getStatus());
 				getOtpDeviceEntityDao().update(entity);
 			}
 			else if (device.getStatus() == OtpStatus.LOCKED &&
-					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:unlock")))  {
+					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:unlock")))  { //$NON-NLS-1$ //$NON-NLS-2$
 				entity.setStatus(device.getStatus());
 				getOtpDeviceEntityDao().update(entity);
 			}
 			else
-				throw new SecurityException("Not authorized");
+				throw new SecurityException(Messages.getString("OtpServiceImpl.5")); //$NON-NLS-1$
 		}
 	}
 
@@ -454,12 +454,12 @@ public class OtpServiceImpl extends OtpServiceBase {
 	protected PagedResult<OtpDevice> doFindOtpDevicesByJsonQuery(String text, String query, Integer firstResult ,
 			Integer pageSize, List<OtpDevice> result) throws Exception {
 		ScimHelper h = new ScimHelper(OtpDevice.class);
-		h.setPrimaryAttributes(new String[] { "user", "name"});
+		h.setPrimaryAttributes(new String[] { "user", "name"}); //$NON-NLS-1$ //$NON-NLS-2$
 		CriteriaSearchConfiguration config = new CriteriaSearchConfiguration();
 		config.setFirstResult(firstResult);
 		config.setMaximumResultSize(pageSize);
 		h.setConfig(config);
-		h.setTenantFilter("tenant.id");
+		h.setTenantFilter("tenant.id"); //$NON-NLS-1$
 		
 		OtpDeviceEntityDao dao = getOtpDeviceEntityDao();
 
@@ -504,7 +504,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		final OtpConfig cfg = handleGetConfiguration();
 		Challenge challenge = new Challenge();
 		challenge.setCardNumber(entity.getName());
-		challenge.setCell("PIN");
+		challenge.setCell("PIN"); //$NON-NLS-1$
 		if (device.getType() == OtpDeviceType.EMAIL) {
 			getEmailValidationService().sendPin(entity, cfg);
 		}
@@ -514,7 +514,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		if (device.getType() == OtpDeviceType.PIN) {
 			String pattern = getPinValidationService().selectDigits(entity, cfg);
 			if (pattern != null)
-				challenge.setCell("digits "+pattern);
+				challenge.setCell(Messages.getString("OtpServiceImpl.6")+pattern); //$NON-NLS-1$
 		}
 		return challenge;
 	}
