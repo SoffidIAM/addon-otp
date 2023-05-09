@@ -98,7 +98,7 @@ public class UserOtpHandler extends FrameHandler {
 				Password p = (Password) pin.getValue(); 
 				if (p == null || p.getPassword().isEmpty())
 				{
-					pin.setWarning(0, "Please, enter a value" );
+					pin.setWarning(0, Labels.getLabel("common.enterValue") );
 					return;
 				}
 				int length = 8;
