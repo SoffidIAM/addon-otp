@@ -50,8 +50,14 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 			return true;
 		} else {
 			entity.setFails(entity.getFails() + 1);
-			if (entity.getFails() > 10)
+			if (entity.getFails() > 10 && entity.getStatus() != OtpStatus.LOCKED) { 
+				try {
+					IssueHelper.lockOtp(entity.getUser().getId(), entity.getName());
+				} catch (Exception e) {
+					// Old version
+				}
 				entity.setStatus(OtpStatus.LOCKED);
+			}
 			getOtpDeviceEntityDao().update(entity);
 			return false;
 		}

@@ -300,6 +300,6 @@
 		</site>
 	</distributionManagement>
 	<properties>
-		<console.version>3.1.0</console.version>
+		<console.version>3.5.0-m7</console.version>
 	</properties>
 </project>

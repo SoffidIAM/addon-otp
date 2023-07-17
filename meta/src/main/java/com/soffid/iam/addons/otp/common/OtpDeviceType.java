@@ -9,4 +9,5 @@ public class OtpDeviceType {
 	public static String EMAIL = "EMAIL";
 	public static String SMS = "SMS";
 	public static String PIN = "PIN";
+	public static String PUSH = "PUSH";
 }
