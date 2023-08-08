@@ -46,7 +46,7 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 			entity.setLastUsed(new Date());
 			entity.setFails(0);
 			entity.setAuthKey(null);
-			getOtpDeviceEntityDao().update(entity);
+			updateInNewTransaction(entity);
 			return true;
 		} else {
 			entity.setFails(entity.getFails() + 1);
@@ -58,9 +58,13 @@ public class SmsValidationServiceImpl extends SmsValidationServiceBase {
 				}
 				entity.setStatus(OtpStatus.LOCKED);
 			}
-			getOtpDeviceEntityDao().update(entity);
+			updateInNewTransaction(entity);
 			return false;
 		}
+	}
+
+	protected void updateInNewTransaction(OtpDeviceEntity entity) throws InternalErrorException, InterruptedException {
+		UpdateUtil.update(getOtpDeviceEntityDao(), entity, getAsyncRunnerService());
 	}
 
 	@Override

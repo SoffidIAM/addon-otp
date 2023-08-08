@@ -1,31 +1,17 @@
 package com.soffid.iam.addons.otp.service.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Random;
 
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.http.HttpStatus;
 
 import com.soffid.iam.addons.otp.common.OtpConfig;
 import com.soffid.iam.addons.otp.common.OtpStatus;
 import com.soffid.iam.addons.otp.model.OtpDeviceEntity;
 import com.soffid.iam.api.Password;
-import com.soffid.iam.api.User;
-import com.soffid.iam.model.UserDataEntity;
-import com.soffid.iam.model.UserEntity;
 
 import es.caib.seycon.ng.exception.InternalErrorException;
 
@@ -42,7 +28,7 @@ public class PinValidationServiceImpl extends PinValidationServiceBase {
 			entity.setLastUsed(new Date());
 			entity.setFails(0);
 			entity.setAuthKey(null);
-			getOtpDeviceEntityDao().update(entity);
+			updateInNewTransaction(entity);
 			return true;
 		} else {
 			entity.setFails(entity.getFails() + 1);
@@ -54,9 +40,13 @@ public class PinValidationServiceImpl extends PinValidationServiceBase {
 				}
 				entity.setStatus(OtpStatus.LOCKED);
 			}
-			getOtpDeviceEntityDao().update(entity);
+			updateInNewTransaction(entity);
 			return false;
 		}
+	}
+
+	protected void updateInNewTransaction(OtpDeviceEntity entity) throws InternalErrorException, InterruptedException {
+		UpdateUtil.update(getOtpDeviceEntityDao(), entity, getAsyncRunnerService());
 	}
 
 	@Override

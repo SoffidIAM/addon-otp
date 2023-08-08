@@ -48,10 +48,10 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
 		{
 			if ( i > lastUsed && intValue == totp.generateOneTimePassword(key, i))
 			{
-				entity.setLastUsedValue( i);
+				entity.setLastUsedValue( i );
 				entity.setLastUsed(new Date());
 				entity.setFails(0);
-				getOtpDeviceEntityDao().update(entity);
+				updateInNewTransaction(entity);
 				return true;
 			}
 		}
@@ -64,8 +64,12 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
 			}
 			entity.setStatus(OtpStatus.LOCKED);
 		}
-		getOtpDeviceEntityDao().update(entity);
+		updateInNewTransaction(entity);
 		return false;
+	}
+
+	protected void updateInNewTransaction(OtpDeviceEntity entity) throws InternalErrorException, InterruptedException {
+		UpdateUtil.update(getOtpDeviceEntityDao(), entity, getAsyncRunnerService());
 	}
 
 	@Override

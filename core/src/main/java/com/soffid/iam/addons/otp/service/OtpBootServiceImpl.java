@@ -3,7 +3,10 @@ package com.soffid.iam.addons.otp.service;
 import com.soffid.iam.addons.otp.common.OtpDevice;
 import com.soffid.iam.addons.otp.service.impl.InternalOTPHandler;
 import com.soffid.iam.addons.otp.service.impl.OtpDeviceCrudHandler;
+import com.soffid.iam.addons.otp.sync.EssoOtpServlet;
 import com.soffid.iam.api.Tenant;
+import com.soffid.iam.sync.SoffidApplication;
+import com.soffid.iam.sync.jetty.JettyServer;
 
 public class OtpBootServiceImpl extends OtpBootServiceBase {
 
@@ -33,7 +36,9 @@ public class OtpBootServiceImpl extends OtpBootServiceBase {
 		handler.setOtpDeviceEntityDao( getOtpDeviceEntityDao());
 		handler.setOtpService(getOtpService());
 		getOTPValidationService().registerOTPHandler(handler);
-//		getCrudRegistryService().registerHandler(OtpDevice.class, new OtpDeviceCrudHandler());
+		
+		SoffidApplication.getJetty(). 
+			bindAdministrationServlet("/otp", null, EssoOtpServlet.class);
 	}
 
 	@Override
