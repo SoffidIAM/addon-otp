@@ -300,6 +300,6 @@
 		</site>
 	</distributionManagement>
 	<properties>
-		<console.version>3.5.0-m17-SNAPSHOT</console.version>
+		<console.version>3.5.1</console.version>
 	</properties>
 </project>
