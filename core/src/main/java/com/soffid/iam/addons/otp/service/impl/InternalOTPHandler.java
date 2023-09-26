@@ -3,6 +3,7 @@ package com.soffid.iam.addons.otp.service.impl;
 import java.util.Comparator;
 import java.util.List;
 
+import com.soffid.iam.addons.otp.common.OtpConfig;
 import com.soffid.iam.addons.otp.common.OtpDeviceType;
 import com.soffid.iam.addons.otp.common.OtpStatus;
 import com.soffid.iam.addons.otp.model.OtpDeviceEntity;
@@ -10,6 +11,8 @@ import com.soffid.iam.addons.otp.model.OtpDeviceEntityDao;
 import com.soffid.iam.addons.otp.service.OtpService;
 import com.soffid.iam.api.Challenge;
 import com.soffid.iam.service.impl.OTPHandler;
+
+import es.caib.seycon.ng.exception.InternalErrorException;
 
 public class InternalOTPHandler implements OTPHandler {
 
@@ -35,12 +38,16 @@ public class InternalOTPHandler implements OTPHandler {
 			if (isCompatible(entity.getType(), challenge.getOtpHandler())) {
 				challenge.setCardNumber(entity.getName());
 				challenge.setCell("PIN");
+				final OtpConfig cfg = otpService.getConfiguration();
 				if (entity.getType() == OtpDeviceType.EMAIL)
-					emailValidationService.sendPin(entity, otpService.getConfiguration());
-				if (entity.getType() == OtpDeviceType.SMS)
-					smsValidationService.sendPin(entity, otpService.getConfiguration());
+					emailValidationService.sendPin(entity, cfg);
+				if (entity.getType() == OtpDeviceType.SMS) {
+					smsValidationService.sendPin(entity, cfg);
+					challenge.setAlternativeMethodAvailable(cfg.isAllowVoice());
+					challenge.setResendAvailable(true);
+				}
 				if (entity.getType() == OtpDeviceType.PIN) {
-					String pattern = pinValidationService.selectDigits(entity, otpService.getConfiguration());
+					String pattern = pinValidationService.selectDigits(entity, cfg);
 					if (pattern != null)
 						challenge.setCell("digits "+pattern);
 				}
@@ -141,6 +148,27 @@ public class InternalOTPHandler implements OTPHandler {
 
 	public void setPinValidationService(PinValidationService pinValidationService) {
 		this.pinValidationService = pinValidationService;
+	}
+
+	@Override
+	public Challenge resendToken(Challenge challenge, boolean alternativeMethod) throws Exception {
+		List<OtpDeviceEntity> token = otpDeviceEntityDao.findEnabledByUser(challenge.getUser().getUserName());
+		if (token == null || token.isEmpty())
+			return challenge;
+		token.sort(new Comparator<OtpDeviceEntity>() {
+			public int compare(OtpDeviceEntity o1, OtpDeviceEntity o2) {
+				return o2.getCreated().compareTo(o1.getCreated());
+			}
+		});
+		
+		for (OtpDeviceEntity entity: token) {
+			if (entity.getName().equals(challenge.getCardNumber())) {
+				if (entity.getType() == OtpDeviceType.SMS) {
+					smsValidationService.resend(entity, otpService.getConfiguration(), alternativeMethod);
+				}
+			}			
+		}
+		return challenge;
 	}
 
 }

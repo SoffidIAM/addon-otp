@@ -34,6 +34,16 @@
 			</div>
 
 			<div sclass="section">
+				<customfield3 label="${c:l('otp.config.voice') }" dataType="SEPARATOR"/>
+				<customfield3 label="${c:l('otp.config.enabled')}" dataType="BOOLEAN" bind="@allowVoice" />
+				<customfield3 label="${c:l('otp.config.url')}" dataType="STRING" bind="@voiceUrl"  />
+				<customfield3 label="${c:l('otp.config.method')}" dataType="STRING" bind="@voiceMethod" />
+				<customfield3 label="${c:l('otp.config.headers')}" dataType="STRING" bind="@voiceHeaders" multiline="true" />
+				<customfield3 label="${c:l('otp.config.httpbody')}" dataType="STRING" multiline="true" bind="@voiceBody" />
+				<customfield3 label="${c:l('otp.config.responseToCheck')}" dataType="STRING" multiline="true" bind="@voiceResponseToCheck" />
+			</div>
+
+			<div sclass="section">
 				<customfield3 label="${c:l('otp.config.totp') }" dataType="SEPARATOR"/>
 				<customfield3 label="${c:l('otp.config.enabled')}" dataType="BOOLEAN" bind="@allowTotp" />
 				<customfield3 label="${c:l('otp.config.digits')}" dataType="NUMBER" bind="totpDigits" />

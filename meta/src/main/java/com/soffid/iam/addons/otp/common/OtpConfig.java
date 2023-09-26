@@ -11,6 +11,8 @@ import com.soffid.mda.annotation.*;
 public class OtpConfig {
 	public boolean allowSms;
 	
+	public boolean allowVoice;
+
 	public boolean allowTotp;
 	
 	public boolean allowHotp;
@@ -31,6 +33,17 @@ public class OtpConfig {
 	public String smsResponseToCheck;
 	@Nullable public Integer smsDigits;
 	
+	@Nullable
+	public String voiceUrl;
+	@Nullable
+	public String voiceMethod;
+	@Nullable
+	public String voiceBody;
+	@Nullable
+	public String voiceHeaders;
+	@Nullable
+	public String voiceResponseToCheck;
+
 	@Nullable public String emailSubject;
 	@Nullable public String emailBody;
 	@Nullable public Integer emailDigits;

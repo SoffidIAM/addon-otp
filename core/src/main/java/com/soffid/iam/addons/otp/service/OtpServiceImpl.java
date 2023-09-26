@@ -295,6 +295,13 @@ public class OtpServiceImpl extends OtpServiceBase {
 				+ "noStop&contentType=application/json&class=0")); //$NON-NLS-1$
 		configuration.setSmsDigits(Integer.decode( getConfigDefault("otp.sms.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
 
+		configuration.setAllowVoice("true".equals(getConfigDefault("otp.voice.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		configuration.setVoiceBody( getBlobConfigDefault("otp.voice.body", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setVoiceHeaders( getConfigDefault("otp.voice.headers", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setVoiceMethod( getConfigDefault("otp.voice.method", "GET")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setVoiceResponseToCheck( getConfigDefault("otp.voice.check", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setVoiceUrl( getConfigDefault("otp.voice.url", "")); //$NON-NLS-1$
+
 		configuration.setAllowHotp("true".equals(getConfigDefault("otp.hotp.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		configuration.setHotpAlgorithm(getConfigDefault("otp.hotp.algorithm", "HmacSHA1")); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setHotpDigits(Integer.decode( getConfigDefault("otp.hotp.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -342,6 +349,13 @@ public class OtpServiceImpl extends OtpServiceBase {
 		updateConfig("otp.sms.url", config.getSmsUrl()); //$NON-NLS-1$
 		updateConfig("otp.sms.digits", config.getSmsDigits()); //$NON-NLS-1$
 		
+		updateConfig("otp.voice.allow", Boolean.toString(config.isAllowVoice())); //$NON-NLS-1$
+		updateBlobConfig("otp.voice.body", config.getVoiceBody()); //$NON-NLS-1$
+		updateConfig("otp.voice.headers", config.getVoiceHeaders()); //$NON-NLS-1$
+		updateConfig("otp.voice.method", config.getVoiceMethod()); //$NON-NLS-1$
+		updateConfig("otp.voice.check", config.getVoiceResponseToCheck()); //$NON-NLS-1$
+		updateConfig("otp.voice.url", config.getVoiceUrl()); //$NON-NLS-1$
+
 		updateConfig("otp.hotp.allow", Boolean.toString(config.isAllowHotp())); //$NON-NLS-1$
 		updateConfig("otp.hotp.algorithm", config.getHotpAlgorithm()); //$NON-NLS-1$
 		updateConfig("otp.hotp.digits", config.getHotpDigits()); //$NON-NLS-1$

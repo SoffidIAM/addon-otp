@@ -21,4 +21,5 @@ import es.caib.seycon.ng.model.UsuariEntity;
 public class SmsValidationService {
 	void sendPin(OtpDeviceEntity device, OtpConfig cfg) {}
 	boolean validatePin (OtpDeviceEntity challenge, OtpConfig cfg, String pin) {return false;}
+	void resend(OtpDeviceEntity challenge, OtpConfig cfg, boolean voice) {}
 }
