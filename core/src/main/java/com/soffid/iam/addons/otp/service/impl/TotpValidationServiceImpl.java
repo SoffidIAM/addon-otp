@@ -56,7 +56,7 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
 			}
 		}
 		entity.setFails(entity.getFails() + 1);
-		if (entity.getFails() > 10 && entity.getStatus() != OtpStatus.LOCKED) { 
+		if (entity.getFails() > cfg.getTotpLock() && entity.getStatus() != OtpStatus.LOCKED) { 
 			try {
 				IssueHelper.lockOtp(entity.getUser().getId(), entity.getName());
 			} catch (Exception e) {

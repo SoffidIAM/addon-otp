@@ -283,6 +283,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		configuration.setEmailBody( getBlobConfigDefault("otp.email.body", Messages.getString("OtpServiceImpl.60"))); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setEmailSubject( getConfigDefault("otp.email.subject", Messages.getString("OtpServiceImpl.62"))); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setEmailDigits(Integer.decode( getConfigDefault("otp.email.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setEmailLock( Integer.decode( getConfigDefault("otp.email.lock", "10"))); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		configuration.setAllowSms("true".equals(getConfigDefault("otp.sms.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		configuration.setSmsBody( getBlobConfigDefault("otp.sms.body", "")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -294,6 +295,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 				+ "message="+Messages.getString("OtpServiceImpl.14")+": ${PIN}&" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				+ "noStop&contentType=application/json&class=0")); //$NON-NLS-1$
 		configuration.setSmsDigits(Integer.decode( getConfigDefault("otp.sms.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setSmsLock( Integer.decode( getConfigDefault("otp.sms.lock", "10"))); //$NON-NLS-1$ //$NON-NLS-2$
 
 		configuration.setAllowVoice("true".equals(getConfigDefault("otp.voice.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		configuration.setVoiceBody( getBlobConfigDefault("otp.voice.body", "")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -306,15 +308,18 @@ public class OtpServiceImpl extends OtpServiceBase {
 		configuration.setHotpAlgorithm(getConfigDefault("otp.hotp.algorithm", "HmacSHA1")); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setHotpDigits(Integer.decode( getConfigDefault("otp.hotp.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setHotpIssuer(getConfigDefault("otp.hotp.issuer", "Issuer")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setHotpLock( Integer.decode( getConfigDefault("otp.hotp.lock", "10"))); //$NON-NLS-1$ //$NON-NLS-2$
 
 		configuration.setAllowTotp("true".equals(getConfigDefault("otp.totp.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		configuration.setTotpAlgorithm(getConfigDefault("otp.totp.algorithm", "HmacSHA1")); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setTotpDigits(Integer.decode( getConfigDefault("otp.totp.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setTotpIssuer(getConfigDefault("otp.totp.issuer", "Issuer")); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setTotpLock( Integer.decode( getConfigDefault("otp.totp.lock", "10"))); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		configuration.setAllowPin("true".equals(getConfigDefault("otp.pin.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		configuration.setPinDigits( Integer.parseInt( getConfigDefault("otp.pin.digits", "3")) ); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setPinLength( Integer.parseInt( getConfigDefault("otp.pin.length", "8"))); //$NON-NLS-1$ //$NON-NLS-2$
+		configuration.setPinLock( Integer.decode( getConfigDefault("otp.pin.lock", "10"))); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return configuration;
 	}
@@ -340,6 +345,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		updateBlobConfig("otp.email.body", config.getEmailBody()); //$NON-NLS-1$
 		updateConfig("otp.email.subject", config.getEmailSubject()); //$NON-NLS-1$
 		updateConfig("otp.email.digits", config.getEmailDigits()); //$NON-NLS-1$
+		updateConfig("otp.email.lock", config.getEmailLock()); //$NON-NLS-1$
 		
 		updateConfig("otp.sms.allow", Boolean.toString(config.isAllowSms())); //$NON-NLS-1$
 		updateBlobConfig("otp.sms.body", config.getSmsBody()); //$NON-NLS-1$
@@ -348,6 +354,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		updateConfig("otp.sms.check", config.getSmsResponseToCheck()); //$NON-NLS-1$
 		updateConfig("otp.sms.url", config.getSmsUrl()); //$NON-NLS-1$
 		updateConfig("otp.sms.digits", config.getSmsDigits()); //$NON-NLS-1$
+		updateConfig("otp.sms.lock", config.getSmsLock()); //$NON-NLS-1$
 		
 		updateConfig("otp.voice.allow", Boolean.toString(config.isAllowVoice())); //$NON-NLS-1$
 		updateBlobConfig("otp.voice.body", config.getVoiceBody()); //$NON-NLS-1$
@@ -360,15 +367,18 @@ public class OtpServiceImpl extends OtpServiceBase {
 		updateConfig("otp.hotp.algorithm", config.getHotpAlgorithm()); //$NON-NLS-1$
 		updateConfig("otp.hotp.digits", config.getHotpDigits()); //$NON-NLS-1$
 		updateConfig("otp.hotp.issuer", config.getHotpIssuer()); //$NON-NLS-1$
+		updateConfig("otp.hotp.lock", config.getHotpLock()); //$NON-NLS-1$
 		
 		updateConfig("otp.totp.allow", Boolean.toString(config.isAllowTotp())); //$NON-NLS-1$
 		updateConfig("otp.totp.algorithm", config.getTotpAlgorithm()); //$NON-NLS-1$
 		updateConfig("otp.totp.digits", config.getTotpDigits()); //$NON-NLS-1$
 		updateConfig("otp.totp.issuer", config.getTotpIssuer()); //$NON-NLS-1$
+		updateConfig("otp.totp.lock", config.getTotpLock()); //$NON-NLS-1$
 		
 		updateConfig("otp.pin.allow", config.isAllowPin()); //$NON-NLS-1$
 		updateConfig("otp.pin.digits", config.getPinDigits()); //$NON-NLS-1$
 		updateConfig("otp.pin.length", config.getPinLength()); //$NON-NLS-1$
+		updateConfig("otp.pin.lock", config.getPinLock()); //$NON-NLS-1$
 		
 	}
 	

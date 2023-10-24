@@ -32,6 +32,7 @@ public class OtpConfig {
 	@Nullable
 	public String smsResponseToCheck;
 	@Nullable public Integer smsDigits;
+	@Nullable public Integer smsLock;
 	
 	@Nullable
 	public String voiceUrl;
@@ -47,16 +48,20 @@ public class OtpConfig {
 	@Nullable public String emailSubject;
 	@Nullable public String emailBody;
 	@Nullable public Integer emailDigits;
+	@Nullable public Integer emailLock;
 	
 	@Nullable public Integer totpDigits;
 	@Nullable public String totpAlgorithm;
 	@Nullable public String totpIssuer;
+	@Nullable public Integer totpLock;
 	
 	@Nullable public Integer hotpDigits;
 	@Nullable public String hotpAlgorithm;
 	@Nullable public String hotpIssuer;
+	@Nullable public Integer hotpLock;
 
 
 	@Nullable public Integer pinLength;
 	@Nullable public Integer pinDigits;
+	@Nullable public Integer pinLock;
 }

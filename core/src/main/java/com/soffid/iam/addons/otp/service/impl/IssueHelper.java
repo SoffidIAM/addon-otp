@@ -23,6 +23,7 @@ public class IssueHelper {
 		iu.setUserId(userId);
 		i.setUsers(Arrays.asList(iu));
 		i.setOtpDevice(otpDevice);
+		i.setHash(otpDevice);
 		svc.createInternalIssue(i);
 	}
 
