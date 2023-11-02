@@ -175,4 +175,10 @@ public class UserOtpHandler extends FrameHandler {
 	public void changeStatus(Event event) throws CommitException {
 		getModel().commit();
 	}
+	
+	public void multiSelect(Event event) {
+		DataTable lb = (DataTable) event.getTarget();
+		displayRemoveButton( lb, lb.getSelectedIndexes() != null && lb.getSelectedIndexes().length > 0);
+	}
+
 }
