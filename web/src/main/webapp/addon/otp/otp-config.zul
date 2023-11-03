@@ -20,7 +20,6 @@
 				<customfield3 label="${c:l('otp.config.digits')}" dataType="NUMBER" bind="@emailDigits" />
 				<customfield3 label="${c:l('otp.config.subject')}" dataType="STRING" bind="@emailSubject"  />
 				<customfield3 label="${c:l('otp.config.body')}" dataType="STRING" multiline="true" bind="@emailBody" />
-				<customfield3 label="${c:l('otp.config.body')}" dataType="STRING" multiline="true" bind="@emailBody" />
 				<customfield3 label="${c:l('otp.config.lock')}" dataType="NUMBER" multiline="false" bind="@emailLock" placeholder="10" />
 			</div>
 	
