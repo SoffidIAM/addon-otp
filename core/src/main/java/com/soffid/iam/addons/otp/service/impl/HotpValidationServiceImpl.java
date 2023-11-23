@@ -53,6 +53,7 @@ public class HotpValidationServiceImpl extends HotpValidationServiceBase {
 		}
 		entity.setFails(entity.getFails() + 1);
 		if (entity.getFails() > cfg.getHotpLock() && entity.getStatus() != OtpStatus.LOCKED) { 
+			new SignalGenerator().generateCredentialCompromiseEvent(entity);
 			try {
 				IssueHelper.lockOtp(entity.getUser().getId(), entity.getName());
 			} catch (Exception e) {

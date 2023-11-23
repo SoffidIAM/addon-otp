@@ -52,6 +52,8 @@ public class EmailValidationServiceImpl extends EmailValidationServiceBase {
 		} else {
 			entity.setFails(entity.getFails() + 1);
 			if (entity.getFails() > cfg.getEmailLock() && entity.getStatus() != OtpStatus.LOCKED) { 
+				new SignalGenerator().generateCredentialCompromiseEvent(entity);
+
 				try {
 					IssueHelper.lockOtp(entity.getUser().getId(), entity.getName());
 				} catch (Exception e) {

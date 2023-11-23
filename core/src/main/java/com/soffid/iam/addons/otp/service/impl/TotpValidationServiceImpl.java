@@ -57,6 +57,7 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
 		}
 		entity.setFails(entity.getFails() + 1);
 		if (entity.getFails() > cfg.getTotpLock() && entity.getStatus() != OtpStatus.LOCKED) { 
+			new SignalGenerator().generateCredentialCompromiseEvent(entity);
 			try {
 				IssueHelper.lockOtp(entity.getUser().getId(), entity.getName());
 			} catch (Exception e) {

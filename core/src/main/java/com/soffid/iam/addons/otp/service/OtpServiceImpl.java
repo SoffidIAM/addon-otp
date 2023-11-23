@@ -21,6 +21,7 @@ import com.soffid.iam.addons.otp.common.OtpDeviceType;
 import com.soffid.iam.addons.otp.common.OtpStatus;
 import com.soffid.iam.addons.otp.model.OtpDeviceEntity;
 import com.soffid.iam.addons.otp.model.OtpDeviceEntityDao;
+import com.soffid.iam.addons.otp.service.impl.SignalGenerator;
 import com.soffid.iam.api.AsyncList;
 import com.soffid.iam.api.Challenge;
 import com.soffid.iam.api.Configuration;
@@ -43,6 +44,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		if (entity != null) {
 			entity.setStatus(OtpStatus.DISABLED);
 			getOtpDeviceEntityDao().update(entity);
+			new SignalGenerator().generateCredentialChangeEvent(entity, "delete");
 		}
 	}
 
@@ -109,6 +111,10 @@ public class OtpServiceImpl extends OtpServiceBase {
 		getOtpDeviceEntityDao().create(entity);
 		device = getOtpDeviceEntityDao().toOtpDevice(entity);
 		device.setImage(image);
+		
+		if (device.getStatus() == OtpStatus.VALIDATED)
+			new SignalGenerator().generateCredentialChangeEvent(entity, "create");
+		
 		return device;
 	}
 
@@ -185,6 +191,8 @@ public class OtpServiceImpl extends OtpServiceBase {
 			entity.setPin(device.getPin().toString());
 		}
 		getOtpDeviceEntityDao().create(entity);
+		if (entity.getStatus() == OtpStatus.CREATED)
+			new SignalGenerator().generateCredentialChangeEvent(entity, "create");
 		return device;
 	}
 
@@ -271,6 +279,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 		if (entity != null && entity.getStatus() == OtpStatus.LOCKED) {
 			entity.setStatus(OtpStatus.VALIDATED);
 			getOtpDeviceEntityDao().update(entity);
+			new SignalGenerator().generateCredentialChangeEvent(entity, "update");
 		}
 	}
 
@@ -424,16 +433,22 @@ public class OtpServiceImpl extends OtpServiceBase {
 			}
 			else if (device.getStatus() == OtpStatus.DISABLED &&
 					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:cancel")))  { //$NON-NLS-1$ //$NON-NLS-2$
+				if (entity.getStatus() != device.getStatus())
+					new SignalGenerator().generateCredentialChangeEvent(entity, "delete");
 				entity.setStatus(device.getStatus());
 				getOtpDeviceEntityDao().update(entity);
 			}
 			else if (device.getStatus() == OtpStatus.VALIDATED &&
 					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:unlock")))  { //$NON-NLS-1$ //$NON-NLS-2$
+				if (entity.getStatus() != device.getStatus())
+					new SignalGenerator().generateCredentialChangeEvent(entity, "create");
 				entity.setStatus(device.getStatus());
 				getOtpDeviceEntityDao().update(entity);
 			}
 			else if (device.getStatus() == OtpStatus.LOCKED &&
 					(Security.isUserInRole("otp:manage") || Security.isUserInRole("otp:unlock")))  { //$NON-NLS-1$ //$NON-NLS-2$
+				if (entity.getStatus() != device.getStatus())
+					new SignalGenerator().generateCredentialChangeEvent(entity, "revoke");
 				entity.setStatus(device.getStatus());
 				getOtpDeviceEntityDao().update(entity);
 			}
