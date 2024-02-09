@@ -5,17 +5,24 @@
 <frame xmlns:h="http://www.w3.org/1999/xhtml" mold="div" style="position: relative" 
 	parentPath="${arg.listbox }"
 	model="${arg.model }"
-	use="com.soffid.iam.addons.otp.web.UserOtpHandler" id="frame">
+	use="com.soffid.iam.addons.otp.web.UserOtpHandler" id="handler">
 
 	<div class="navigation-bar dummy">
 		<label bind="//user/listbox:/@userName"></label> - <label bind="//user/listbox:/@fullName"/>
+		<menu2>
+			<menu2item image="/img/printer.svg" label="${c:l('seu.impressores') }" id="printersMenu" onClick="ref:frame.userPrinters"/>
+			<menu2item image="/img/menu/audit.svg" label="${c:l('seu.auditoria') }" onClick="ref:frame.audit" if="${soffid:isUserInRole('seu:auditoria:show') }"/>
+			<menu2item image="/img/menu/access-record.svg" label="${c:l('seu.registresaccess') }" onClick="ref:frame.accessLog" if="${soffid:isUserInRole('seu:registreAcces:show') }"/>
+			<menu2item image="/img/sync.svg" label="${c:l('usuaris.PropagarCanvi') }" onClick="ref:frame.synchronize" />
+			<menu2item image="/img/refresh.svg" label="${c:l('debug.zul.Refrescar') }" onClick="ref:frame.refreshCurrentNode" />
+		</menu2>
 	</div>
 
 	<datatable enablefilter="true" id="listbox"
 		autocommit="true"
 		multiselect="true"
-		onMultiSelect="ref:frame.multiSelect" 
-		onSelect="ref:frame.select" 
+		onMultiSelect="ref:handler.multiSelect" 
+		onSelect="ref:handler.select" 
 	    dataPath="${arg.listbox }:/otp" >
 	<attribute name="columns"><![CDATA[
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.name')}
@@ -36,8 +43,8 @@
 			]]></attribute>
 	</datatable>
 	<div width="100%" style="text-align: right"  >
-		<div class="deleteButton" onClick="ref:frame.deleteSelected" visible="false"  if="${soffid:isUserInRole('otp:cancel')}">-</div>
-		<div class="addButton" onClick="ref:frame.addNew">+</div>
+		<div class="deleteButton" onClick="ref:handler.deleteSelected" visible="false"  if="${soffid:isUserInRole('otp:cancel')}">-</div>
+		<div class="addButton" onClick="ref:handler.addNew">+</div>
 	</div>
 
 	<window closable="false"
@@ -58,7 +65,7 @@
 				<customfield3 dataType="STRING"
 					id="type"
 					label="${c:l('otp.selectType') }"
-					onChange="ref:frame.changeDeviceType"
+					onChange="ref:handler.changeDeviceType"
 					required="true" >
 				</customfield3>		
 			
@@ -82,8 +89,8 @@
 				</customfield3>		
 
 				<div style="text-align: right; width: 100%">
-					<button image="/img/undo-r.svg" label="${c:l('common.undo')}" onClick="ref:frame.addUndo" />
-					<button image="/img/next-r.svg" label="${c:l('otp.verifyToken')}" onClick="ref:frame.addStep2"/>
+					<button image="/img/undo-r.svg" label="${c:l('common.undo')}" onClick="ref:handler.addUndo" />
+					<button image="/img/next-r.svg" label="${c:l('otp.verifyToken')}" onClick="ref:handler.addStep2"/>
 				</div>
 						
 			</div>
@@ -99,7 +106,7 @@
 				
 				<div style="text-align: right; width: 100%">
 					<button image="/img/save-r.svg" label="${c:l('common.apply') }"
-						onClick="ref:frame.addApply"/>
+						onClick="ref:handler.addApply"/>
 				</div>
 			</div>
 		</wizard>
@@ -128,11 +135,11 @@
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.created')}" dataType="DATE_TIME" bind='@created' readonly="true"/>
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.fails')}" dataType="NUMBER" bind='@fails' readonly="true"/>
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.status')}" dataType="STRING" bind="@status" 
-				enumeration="com.soffid.iam.addons.otp.common.OtpStatus" readonly="false" onChange="ref:frame.changeStatus"/>
+				enumeration="com.soffid.iam.addons.otp.common.OtpStatus" readonly="false" onChange="ref:handler.changeStatus"/>
 		</form>
 		<div style="text-align: right; width: 100%">
 			<button image="/img/undo-r.svg" label="${c:l('error.zul.Tancar')}" 
-				onClick="ref:frame.closeDetails">
+				onClick="ref:handler.closeDetails">
 			</button>
 		</div>
 	</window>
