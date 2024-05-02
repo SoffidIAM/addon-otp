@@ -102,6 +102,32 @@ public class InternalOTPHandler implements OTPHandler {
 		return false;
 	}
 
+	public String generateTypeForAudit(Challenge challenge) throws Exception {
+		List<OtpDeviceEntity> token = otpDeviceEntityDao.findEnabledByUser(challenge.getUser().getUserName());
+		if (token == null || token.isEmpty())
+			return null;
+		token.sort(new Comparator<OtpDeviceEntity>() {
+			public int compare(OtpDeviceEntity o1, OtpDeviceEntity o2) {
+				return o2.getCreated().compareTo(o1.getCreated());
+			}
+		});
+		for (OtpDeviceEntity entity: token) {
+			if (entity.getName().equals(challenge.getCardNumber())) {
+				if (entity.getType() == OtpDeviceType.EMAIL)
+					return "M";
+				if (entity.getType() == OtpDeviceType.SMS)
+					return "S";
+				if (entity.getType() == OtpDeviceType.HOTP)
+					return "O";
+				if (entity.getType() == OtpDeviceType.TOTP)
+					return "O";
+				if (entity.getType() == OtpDeviceType.PIN)
+					return "I";
+			}
+		}
+		return "?";
+	}
+
 	public boolean resetFailCount(String account) throws Exception {
 		List<OtpDeviceEntity> token = otpDeviceEntityDao.findEnabledByUser(account);
 		if (token == null || token.isEmpty())
