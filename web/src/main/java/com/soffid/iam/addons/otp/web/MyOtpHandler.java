@@ -169,7 +169,7 @@ public class MyOtpHandler extends FrameHandler {
 		super.afterCompose();
 		HttpServletRequest req = (HttpServletRequest) Executions.getCurrent().getNativeRequest();
 		String wizard = req.getParameter("wizard");
-		if (wizard != null) {
+		if (wizard != null && isVisible()) {
 			Component w = getFellow("add-window");			
 			try {
 				if ("totp".equals(wizard)) {
