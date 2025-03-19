@@ -25,6 +25,7 @@ import com.soffid.iam.api.AsyncList;
 import com.soffid.iam.api.PagedResult;
 import com.soffid.iam.service.AsyncRunnerService;
 import com.soffid.mda.annotation.Depends;
+import com.soffid.mda.annotation.Description;
 import com.soffid.mda.annotation.Nullable;
 import com.soffid.mda.annotation.Operation;
 import com.soffid.mda.annotation.Service;
@@ -35,7 +36,7 @@ import es.caib.seycon.ng.model.MaquinaEntity;
 import es.caib.seycon.ng.servei.ConfiguracioService;
 import es.caib.seycon.ng.servei.XarxaService;
 
-@Service
+@Service(serverRole = "agent", serverPath = "/seycon/otpService")
 @Depends ({
 	MaquinaEntity.class,
 	OtpDeviceEntity.class,
@@ -53,6 +54,11 @@ public abstract class OtpService {
 	@Operation ( grantees={otp_manage.class})
 	@Transactional(rollbackFor={java.lang.Exception.class})
 	public OtpDevice registerDevice(String user, OtpDevice device) { return null;}
+
+	@Operation ( grantees={otp_manage.class})
+	@Description("Method to register a device from a sync-server agent")
+	@Transactional(rollbackFor={java.lang.Exception.class})
+	public OtpDevice registerDevice2(String user, OtpDevice device) { return null;}
 
 	@Operation ( grantees={otp_manage.class})
 	@Transactional(rollbackFor={java.lang.Exception.class})

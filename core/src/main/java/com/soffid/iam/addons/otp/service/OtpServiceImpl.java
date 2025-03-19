@@ -1,13 +1,17 @@
 package com.soffid.iam.addons.otp.service;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base32;
 
@@ -50,6 +54,15 @@ public class OtpServiceImpl extends OtpServiceBase {
 
 	@Override
 	protected OtpDevice handleRegisterDevice(String user, OtpDevice device) throws Exception {
+		return handleRegisterDevice(user, device, true);
+	}
+		
+	@Override
+	protected OtpDevice handleRegisterDevice2(String user, OtpDevice device) throws Exception {
+		return handleRegisterDevice(user, device, false);
+	}
+
+	protected OtpDevice handleRegisterDevice(String user, OtpDevice device, boolean useImage) throws Exception {
 		BufferedImage image = null;
 		OtpDeviceEntity entity = getOtpDeviceEntityDao().newOtpDeviceEntity();
 		entity.setCreated(new Date());
@@ -110,7 +123,14 @@ public class OtpServiceImpl extends OtpServiceBase {
 		}
 		getOtpDeviceEntityDao().create(entity);
 		device = getOtpDeviceEntityDao().toOtpDevice(entity);
-		device.setImage(image);
+		if (useImage)
+			device.setImage(image);
+		else {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ImageIO.write(image, "png", out);
+			device.setPngImage("data:image/png;base64,"+
+					Base64.getEncoder().encodeToString(out.toByteArray()));
+		}
 		
 		if (device.getStatus() == OtpStatus.VALIDATED)
 			new SignalGenerator().generateCredentialChangeEvent(entity, "create");
@@ -557,5 +577,6 @@ public class OtpServiceImpl extends OtpServiceBase {
 		}
 		return challenge;
 	}
+
 }
 

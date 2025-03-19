@@ -55,6 +55,7 @@ public class PinValidationServiceImpl extends PinValidationServiceBase {
 		final String box = "\u25a2";
 		final String square = "\u25a3";
 		final char one = '\u2460';
+		final String dot = "\u25ab";
 		
 		if (!cfg.isAllowPin())
 			throw new InternalErrorException("PIN OTP is disabled by system administrator");
@@ -74,13 +75,13 @@ public class PinValidationServiceImpl extends PinValidationServiceBase {
 		String hint = "";
 		for (int i = 0; i < ach.length; i++ ) {
 			if (ach[i] == '\0') {
-				hint += square;;
+				hint += dot;
 			}
 			else if (ach.length <= 10) {
-				hint += (char) (i+one);
+				hint += i == 10 ? '0' : (char) (i+'1');
 				result += ach[i];
 			} else {
-				hint += box;
+				hint += "?";
 				result += ach[i];
 			}
 		}
@@ -89,7 +90,7 @@ public class PinValidationServiceImpl extends PinValidationServiceBase {
 		device.setAuthKey(Base64.getEncoder().encodeToString(digest));
 		getOtpDeviceEntityDao().update(device);
 
-		if (hint.contains(square))
+		if (hint.contains(dot))
 			return hint;
 		else
 			return null;

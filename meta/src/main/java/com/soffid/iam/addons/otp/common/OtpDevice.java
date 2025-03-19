@@ -59,4 +59,8 @@ public class OtpDevice {
 	@Description("QR Code to configure the OTP client device. Only present on creation")
 	@Nullable
 	BufferedImage image;
+
+	@Description("QR Code to configure the OTP client device. Only present on creation from sync server")
+	@Nullable
+	String pngImage;
 }

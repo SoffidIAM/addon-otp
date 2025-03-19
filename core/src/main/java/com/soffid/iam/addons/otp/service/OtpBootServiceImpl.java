@@ -39,6 +39,8 @@ public class OtpBootServiceImpl extends OtpBootServiceBase {
 		
 		SoffidApplication.getJetty(). 
 			bindAdministrationServlet("/otp", null, EssoOtpServlet.class);
+		SoffidApplication.getJetty(). 
+			publish(getOtpService(), OtpService.REMOTE_PATH, "agent");
 	}
 
 	@Override
