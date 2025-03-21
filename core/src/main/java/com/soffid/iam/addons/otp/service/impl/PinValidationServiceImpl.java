@@ -28,6 +28,8 @@ public class PinValidationServiceImpl extends PinValidationServiceBase {
 			entity.setLastUsed(new Date());
 			entity.setFails(0);
 			entity.setAuthKey(null);
+			if (entity.getStatus() == OtpStatus.CREATED)
+				entity.setStatus(OtpStatus.VALIDATED);
 			updateInNewTransaction(entity);
 			return true;
 		} else {

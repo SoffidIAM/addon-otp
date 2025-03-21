@@ -51,6 +51,8 @@ public class TotpValidationServiceImpl extends TotpValidationServiceBase {
 				entity.setLastUsedValue( i );
 				entity.setLastUsed(new Date());
 				entity.setFails(0);
+				if (entity.getStatus() == OtpStatus.CREATED)
+					entity.setStatus(OtpStatus.VALIDATED);
 				updateInNewTransaction(entity);
 				return true;
 			}

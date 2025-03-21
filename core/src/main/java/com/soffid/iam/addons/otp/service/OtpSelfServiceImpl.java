@@ -41,10 +41,6 @@ public class OtpSelfServiceImpl extends OtpSelfServiceBase {
 		if (entity.getType() == OtpDeviceType.PIN) {
 			valid = getPinValidationService().validatePin(entity, getOtpService().getConfiguration(), pin);
 		}
-		if (valid) {
-			entity.setStatus(OtpStatus.VALIDATED);
-			getOtpDeviceEntityDao().update(entity);
-		}
 		return valid;
 	}
 
