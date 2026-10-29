@@ -93,6 +93,10 @@ public abstract class OtpDeviceEntity {
 	@Nullable
 	String algorithm;
 
+	@Description("Renewal date")
+	@Column (name="OTP_RENEWAL")
+	@Nullable
+	Date renewalDate;
 
 
 	@DaoFinder("select sce\n"

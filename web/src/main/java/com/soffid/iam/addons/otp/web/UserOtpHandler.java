@@ -91,6 +91,7 @@ public class UserOtpHandler extends FrameHandler {
 		CustomField3 phone = (CustomField3) w.getFellow("phone");
 		CustomField3 email = (CustomField3) w.getFellow("email");
 		CustomField3 pin = (CustomField3) w.getFellow("pin0");
+		
 		if (type.attributeValidateAll() &&
 				(!phone.isVisible() || phone.attributeValidateAll()) &&
 				(!email.isVisible() || email.attributeValidateAll())) {

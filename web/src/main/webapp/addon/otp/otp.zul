@@ -31,10 +31,16 @@
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.name')}
   value: name
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.created')}
-  value: created_datetime
+  template: #{created_datetime}
+  value: created
   $class: datetimeColumn
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.lastUsed')}
-  value: lastUsed_datetime
+  template: #{lastUsed_datetime}
+  value: lastUsed
+  $class: datetimeColumn
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.renewalDate')}
+  template: #{renewalDate_datetime}
+  value: renewalDate
   $class: datetimeColumn
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.status')}
   template: >-

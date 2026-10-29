@@ -54,11 +54,13 @@ public class OtpConfig {
 	@Nullable public String totpAlgorithm;
 	@Nullable public String totpIssuer;
 	@Nullable public Integer totpLock;
+	@Nullable public Integer totpRenewal;
 	
 	@Nullable public Integer hotpDigits;
 	@Nullable public String hotpAlgorithm;
 	@Nullable public String hotpIssuer;
 	@Nullable public Integer hotpLock;
+	@Nullable public Integer hotpRenewal;
 
 
 	@Nullable public Integer pinLength;

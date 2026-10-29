@@ -52,6 +52,7 @@
 				<customfield3 label="${c:l('otp.config.algorithm')}" dataType="STRING" bind="@totpAlgorithm" listOfValues="HmacSHA1, HmacSHA256" />
 				<customfield3 label="${c:l('otp.config.issuer')}" dataType="STRING" bind="@totpIssuer"  />
 				<customfield3 label="${c:l('otp.config.lock')}" dataType="NUMBER" multiline="false" bind="@totpLock" placeholder="10" />
+				<customfield3 label="${c:l('otp.config.renewal')}" dataType="NUMBER" multiline="false" bind="@totpRenewal" placeholder="10" />
 			</div>
 
 			<div sclass="section">
@@ -61,6 +62,7 @@
 				<customfield3 label="${c:l('otp.config.algorithm')}" dataType="STRING" bind="@hotpAlgorithm" listOfValues="HmacSHA1, HmacSHA256" />
 				<customfield3 label="${c:l('otp.config.issuer')}" dataType="STRING" bind="@hotpIssuer"  />
 				<customfield3 label="${c:l('otp.config.lock')}" dataType="NUMBER" multiline="false" bind="@hotpLock" placeholder="10" />
+				<customfield3 label="${c:l('otp.config.renewal')}" dataType="NUMBER" multiline="false" bind="@hotpRenewal" placeholder="10" />
 			</div>
 			
 			<div sclass="section">

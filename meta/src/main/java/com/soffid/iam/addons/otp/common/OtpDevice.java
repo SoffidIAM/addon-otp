@@ -6,6 +6,7 @@
 
 package com.soffid.iam.addons.otp.common;
 import java.awt.image.BufferedImage;
+import java.util.Date;
 
 import com.soffid.iam.addons.otp.model.OtpDeviceEntity;
 import com.soffid.iam.model.TenantEntity;
@@ -63,4 +64,9 @@ public class OtpDevice {
 	@Description("QR Code to configure the OTP client device. Only present on creation from sync server")
 	@Nullable
 	String pngImage;
+	
+	@Description("Renewal date")
+	@Nullable
+	Date renewalDate;
+
 }

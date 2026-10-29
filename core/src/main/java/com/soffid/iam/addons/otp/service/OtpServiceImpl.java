@@ -103,14 +103,20 @@ public class OtpServiceImpl extends OtpServiceBase {
 			entity.setName(Messages.getString("OtpServiceImpl.4")+new String(ach)); //$NON-NLS-1$
 		}
 		if (device.getType() == OtpDeviceType.TOTP) {
+			OtpConfig cfg = handleGetConfiguration();
 			String last = getTokenId("TOTP"); //$NON-NLS-1$
 			entity.setName(last);
+			if (cfg.getTotpRenewal() != null)
+				entity.setRenewalDate(new Date(System.currentTimeMillis() + cfg.getTotpRenewal()*24*3600*1000L));
 			byte[] key = getTotpValidationService().generateKey(entity, handleGetConfiguration() );
 			image = generateTotpQR(entity, key);
 		}
 		if (device.getType() == OtpDeviceType.HOTP) {
+			OtpConfig cfg = handleGetConfiguration();
 			String last = getTokenId("HOTP"); //$NON-NLS-1$
 			entity.setName(last);
+			if (cfg.getHotpRenewal() != null)
+				entity.setRenewalDate(new Date(System.currentTimeMillis() + cfg.getHotpRenewal()*24*3600*1000L));
 			byte[] key = getHotpValidationService().generateKey(entity, handleGetConfiguration());
 			image = generateHotpQR(entity, key);
 		}
@@ -338,12 +344,16 @@ public class OtpServiceImpl extends OtpServiceBase {
 		configuration.setHotpDigits(Integer.decode( getConfigDefault("otp.hotp.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setHotpIssuer(getConfigDefault("otp.hotp.issuer", "Issuer")); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setHotpLock( Integer.decode( getConfigDefault("otp.hotp.lock", "10"))); //$NON-NLS-1$ //$NON-NLS-2$
+		String r = getConfigDefault("otp.hotp.renewal", null);
+		configuration.setHotpRenewal( r == null ? null: Integer.decode(r)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		configuration.setAllowTotp("true".equals(getConfigDefault("otp.totp.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		configuration.setTotpAlgorithm(getConfigDefault("otp.totp.algorithm", "HmacSHA1")); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setTotpDigits(Integer.decode( getConfigDefault("otp.totp.digits", "6"))); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setTotpIssuer(getConfigDefault("otp.totp.issuer", "Issuer")); //$NON-NLS-1$ //$NON-NLS-2$
 		configuration.setTotpLock( Integer.decode( getConfigDefault("otp.totp.lock", "10"))); //$NON-NLS-1$ //$NON-NLS-2$
+		r = getConfigDefault("otp.totp.renewal", null);
+		configuration.setTotpRenewal( r == null ? null: Integer.decode(r)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		configuration.setAllowPin("true".equals(getConfigDefault("otp.pin.allow", "false"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		configuration.setPinDigits( Integer.parseInt( getConfigDefault("otp.pin.digits", "3")) ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -397,12 +407,14 @@ public class OtpServiceImpl extends OtpServiceBase {
 		updateConfig("otp.hotp.digits", config.getHotpDigits()); //$NON-NLS-1$
 		updateConfig("otp.hotp.issuer", config.getHotpIssuer()); //$NON-NLS-1$
 		updateConfig("otp.hotp.lock", config.getHotpLock()); //$NON-NLS-1$
+		updateConfig("otp.hotp.renewal", config.getHotpRenewal()); //$NON-NLS-1$
 		
 		updateConfig("otp.totp.allow", Boolean.toString(config.isAllowTotp())); //$NON-NLS-1$
 		updateConfig("otp.totp.algorithm", config.getTotpAlgorithm()); //$NON-NLS-1$
 		updateConfig("otp.totp.digits", config.getTotpDigits()); //$NON-NLS-1$
 		updateConfig("otp.totp.issuer", config.getTotpIssuer()); //$NON-NLS-1$
 		updateConfig("otp.totp.lock", config.getTotpLock()); //$NON-NLS-1$
+		updateConfig("otp.totp.renewal", config.getTotpRenewal()); //$NON-NLS-1$
 		
 		updateConfig("otp.pin.allow", config.isAllowPin()); //$NON-NLS-1$
 		updateConfig("otp.pin.digits", config.getPinDigits()); //$NON-NLS-1$
@@ -446,6 +458,7 @@ public class OtpServiceImpl extends OtpServiceBase {
 	protected void handleUpdateDevice(OtpDevice device) throws Exception {
 		OtpDeviceEntity entity = getOtpDeviceEntityDao().load(device.getId());
 		if (entity != null) {
+			entity.setRenewalDate(device.getRenewalDate());
 			if (device.getStatus() == OtpStatus.CREATED &&
 					Security.isUserInRole("otp:manage")) { //$NON-NLS-1$
 				entity.setStatus(device.getStatus());

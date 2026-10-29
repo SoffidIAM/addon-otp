@@ -38,6 +38,7 @@ public class InternalOTPHandler implements OTPHandler {
 			if (isCompatible(entity.getType(), challenge.getOtpHandler())) {
 				challenge.setCardNumber(entity.getName());
 				challenge.setCell("PIN");
+				challenge.setAdditionalData(entity.getRenewalDate());
 				final OtpConfig cfg = otpService.getConfiguration();
 				if (entity.getType() == OtpDeviceType.EMAIL)
 					emailValidationService.sendPin(entity, cfg);

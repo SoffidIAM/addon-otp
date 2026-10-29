@@ -28,10 +28,12 @@
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.name')}
   value: name
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.created')}
-  value: created_datetime
+  template: #{created_datetime}
+  value: created
   $class: datetimeColumn
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.lastUsed')}
-  value: lastUsed_datetime
+  template: #{lastUsed_datetime}
+  value: lastUsed
   $class: datetimeColumn
 - name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.status')}
   template: >-
@@ -39,6 +41,10 @@
     status.value=='D'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.DISABLED') }' :
     status.value=='V'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.VALIDATED') }' :
     status.value=='L'? '${c:l('com.soffid.iam.addons.otp.common.OtpStatus.LOCKED') }' : ''}
+  $class: datetimeColumn
+- name: ${c:l('com.soffid.iam.addons.otp.common.OtpDevice.renewalDate')}
+  template: #{renewalDate_datetime}
+  value: renewalDate
   $class: datetimeColumn
 			]]></attribute>
 	</datatable>
@@ -133,6 +139,7 @@
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.phone')}" dataType="STRING" bind="@phone" readonly="true"/>
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.lastUsed')}" dataType="DATE_TIME" bind="@lastUsed" readonly="true"/>
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.created')}" dataType="DATE_TIME" bind='@created' readonly="true"/>
+			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.renewalDate')}" dataType="DATE_TIME" bind='@renewalDate' readonly="false"/>
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.fails')}" dataType="NUMBER" bind='@fails' readonly="true"/>
 			<customfield3 label="${c:l('com.soffid.iam.addons.otp.common.OtpDevice.status')}" dataType="STRING" bind="@status" 
 				enumeration="com.soffid.iam.addons.otp.common.OtpStatus" readonly="false" onChange="ref:handler.changeStatus"/>
